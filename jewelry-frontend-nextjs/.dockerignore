@@ -1,0 +1,12 @@
+node_modules
+npm-debug.log
+.env
+.env.local
+.env.*
+!.env.local.example
+.next
+coverage
+.git
+.gitignore
+*.md
+__tests__

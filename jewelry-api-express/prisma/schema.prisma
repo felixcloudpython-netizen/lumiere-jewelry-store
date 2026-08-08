@@ -1,0 +1,183 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String         @id @default(cuid())
+  email     String         @unique
+  password  String
+  firstName String?
+  lastName  String?
+  phone     String?
+  role      Role           @default(CUSTOMER)
+  addresses Address[]
+  orders    Order[]
+  wishlist  WishlistItem[]
+  messages  Message[]
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+}
+
+model Address {
+  id         String  @id @default(cuid())
+  userId     String
+  user       User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  firstName  String
+  lastName   String
+  address    String
+  apartment  String?
+  city       String
+  country    String  @default("VN")
+  postalCode String
+  phone      String
+  isDefault  Boolean @default(false)
+  orders     Order[]
+}
+
+model Category {
+  id       String     @id @default(cuid())
+  name     String     @unique
+  slug     String     @unique
+  parentId String?
+  parent   Category?  @relation("CategoryParent", fields: [parentId], references: [id])
+  children Category[] @relation("CategoryParent")
+  products Product[]
+}
+
+model Collection {
+  id          String    @id @default(cuid())
+  name        String    @unique
+  slug        String    @unique
+  description String?
+  story       String?
+  heroImage   String?
+  products    Product[]
+}
+
+model Product {
+  id            String         @id @default(cuid())
+  slug          String         @unique
+  name          String
+  description   String         @db.Text
+  price         Int
+  comparePrice  Int?
+  sku           String         @unique
+  categoryId    String
+  category      Category       @relation(fields: [categoryId], references: [id])
+  collectionId  String?
+  collection    Collection?    @relation(fields: [collectionId], references: [id])
+  metal         Metal
+  stones        String[]
+  sizes         Int[]
+  images        String[]
+  inventory     Int            @default(0)
+  inStock       Boolean        @default(true)
+  isFeatured    Boolean        @default(false)
+  isBestseller  Boolean        @default(false)
+  orderItems    OrderItem[]
+  wishlistItems WishlistItem[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  @@index([slug])
+  @@index([categoryId])
+  @@index([collectionId])
+  @@index([isFeatured])
+  @@index([isBestseller])
+}
+
+model Order {
+  id              String        @id @default(cuid())
+  userId          String?
+  user            User?         @relation(fields: [userId], references: [id])
+  email           String
+  status          OrderStatus   @default(PENDING)
+  paymentStatus   PaymentStatus @default(PENDING)
+  shippingAddress Json
+  subtotal        Int
+  shipping        Int
+  discount        Int           @default(0)
+  tax             Int           @default(0)
+  total           Int
+  items           OrderItem[]
+  paymentIntentId String?
+  trackingNumber  String?
+  notes           String?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  addressId       String
+  address         Address       @relation(fields: [addressId], references: [id])
+}
+
+model OrderItem {
+  id        String  @id @default(cuid())
+  orderId   String
+  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
+  name      String
+  price     Int
+  quantity  Int
+  size      Int?
+}
+
+model WishlistItem {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, productId])
+}
+
+model Message {
+  id        String   @id @default(cuid())
+  content   String
+  senderId  String
+  sender    User     @relation(fields: [senderId], references: [id], onDelete: Cascade)
+  roomId    String   @default("support")
+  isAdmin   Boolean  @default(false)
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([senderId])
+  @@index([roomId])
+  @@index([createdAt])
+}
+
+enum Role {
+  CUSTOMER
+  ADMIN
+}
+
+enum Metal {
+  YELLOW_GOLD
+  WHITE_GOLD
+  ROSE_GOLD
+  SILVER
+  PLATINUM
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+  REFUNDED
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
+}

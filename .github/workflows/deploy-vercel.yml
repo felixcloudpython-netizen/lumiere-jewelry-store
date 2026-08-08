@@ -1,0 +1,39 @@
+name: Deploy Frontend to Vercel
+
+# Dự án đang có 2 pipeline deploy cùng lúc khi push vào `main`: cái này (Vercel,
+# chỉ deploy frontend) và cd.yml (VPS Docker, deploy toàn bộ stack: Postgres +
+# Redis + backend Express/Socket.io + frontend + Nginx). Giữ cả 2 tự động chạy
+# song song dễ gây nhầm domain nào là bản thật, và 2 nơi có thể lệch biến môi
+# trường. VPS Docker (cd.yml) được chọn làm pipeline CHÍNH vì đây là nơi duy
+# nhất chạy được backend có Socket.io (Vercel là serverless, không phù hợp
+# host WebSocket server lâu dài). Workflow này giữ lại nhưng chuyển sang CHỈ
+# chạy thủ công (workflow_dispatch) — muốn dùng Vercel làm chính thay vì VPS
+# thì đổi `on:` lại thành `push: { branches: [main] }` như cũ.
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Vercel CLI
+        run: npm install --global vercel@latest
+
+      - name: Pull Vercel Environment
+        working-directory: ./jewelry-frontend-nextjs
+        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Build
+        working-directory: ./jewelry-frontend-nextjs
+        run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Deploy
+        working-directory: ./jewelry-frontend-nextjs
+        run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}

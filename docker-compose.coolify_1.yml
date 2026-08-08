@@ -1,0 +1,59 @@
+version: '3.8'
+
+# Dùng riêng cho deploy qua Coolify — khác với docker-compose.prod.yml (vẫn giữ
+# nguyên, dùng cho đường VPS thuần tự quản lý Nginx/SSL bằng tay).
+#
+# 3 khác biệt so với docker-compose.prod.yml:
+# 1. KHÔNG có service `nginx` — Coolify tự có reverse proxy (Traefik/Caddy) lo
+#    domain + SSL cho từng service, tự chạy thêm 1 nginx nữa sẽ đụng cổng 80/443.
+# 2. KHÔNG có service `redis` — đã xác nhận không có chỗ nào trong code dùng tới
+#    (xem ghi chú ở lần rà soát bảo mật đầu tiên), giữ lại chỉ tốn tài nguyên.
+# 3. KHÔNG có service `postgres` — dùng Postgres do CHÍNH COOLIFY quản lý (tạo
+#    riêng như 1 "Database" resource trong Coolify UI) thay vì tự chạy trong
+#    compose, để có backup tự động theo lịch — điều mà cách tự chạy trước đây
+#    hoàn toàn không có. `DATABASE_URL` sẽ trỏ tới Postgres đó qua biến môi
+#    trường Coolify cấp, không tự ráp chuỗi kết nối từ POSTGRES_USER/PASSWORD/DB
+#    như trước nữa.
+
+services:
+  backend:
+    build:
+      context: ./jewelry-api-express
+      dockerfile: Dockerfile
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN}
+      PORT: 3001
+      CLIENT_URL: ${CLIENT_URL}
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY}
+      STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET}
+      RESEND_API_KEY: ${RESEND_API_KEY}
+      FROM_EMAIL: ${FROM_EMAIL}
+      CLOUDINARY_CLOUD_NAME: ${CLOUDINARY_CLOUD_NAME}
+      CLOUDINARY_API_KEY: ${CLOUDINARY_API_KEY}
+      CLOUDINARY_API_SECRET: ${CLOUDINARY_API_SECRET}
+    ports:
+      - "3001:3001"
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./jewelry-frontend-nextjs
+      dockerfile: Dockerfile
+      args:
+        # BẮT BUỘC: NEXT_PUBLIC_* phải được truyền ở đây (build time) — Next.js
+        # đã bake các biến này vào bundle JS ngay lúc build, set ở `environment:`
+        # runtime không có tác dụng. Deploy backend TRƯỚC để có domain Coolify
+        # cấp cho backend, rồi mới điền domain đó vào NEXT_PUBLIC_API_URL trước
+        # khi build frontend.
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
+        NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: ${NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY}
+    environment:
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
+      NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: ${NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY}
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    restart: unless-stopped
