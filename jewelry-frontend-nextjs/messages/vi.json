@@ -154,7 +154,8 @@
     "checkoutTitle": "Đăng nhập để tiếp tục",
     "checkoutSubtitle": "Cần đăng nhập trước khi đặt hàng, để bạn theo dõi được đơn hàng của mình.",
     "adminSubtitle": "Đăng nhập bằng tài khoản admin để vào trang quản trị.",
-    "chatSubtitle": "Đăng nhập để trò chuyện với đội ngũ hỗ trợ."
+    "chatSubtitle": "Đăng nhập để trò chuyện với đội ngũ hỗ trợ.",
+    "accountSubtitle": "Đăng nhập để xem tài khoản và lịch sử đơn hàng của bạn."
   },
   "footer": {
     "clientCare": "Chăm sóc khách hàng",
@@ -202,6 +203,13 @@
     "productNotFound": "Không tìm thấy sản phẩm",
     "productNotFoundDesc": "Sản phẩm này có thể đã bị gỡ hoặc không còn khả dụng.",
     "browseJewelry": "Xem trang sức"
+  },
+  "account": {
+    "title": "Tài khoản của tôi",
+    "signOut": "Đăng xuất",
+    "orderHistory": "Lịch sử đơn hàng",
+    "noOrders": "Bạn chưa có đơn hàng nào.",
+    "orderPlaced": "Đặt ngày {date}"
   },
   "chat": {
     "supportTitle": "Hỗ trợ khách hàng",

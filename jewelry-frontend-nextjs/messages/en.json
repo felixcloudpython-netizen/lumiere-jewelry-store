@@ -154,7 +154,8 @@
     "checkoutTitle": "Sign in to continue",
     "checkoutSubtitle": "You need to sign in before placing an order, so you can track it afterwards.",
     "adminSubtitle": "Sign in with an admin account to access the dashboard.",
-    "chatSubtitle": "Sign in to chat with our support team."
+    "chatSubtitle": "Sign in to chat with our support team.",
+    "accountSubtitle": "Sign in to view your account and order history."
   },
   "footer": {
     "clientCare": "Client Care",
@@ -202,6 +203,13 @@
     "productNotFound": "Product not found",
     "productNotFoundDesc": "This product may have been removed or is no longer available.",
     "browseJewelry": "Browse Jewelry"
+  },
+  "account": {
+    "title": "My Account",
+    "signOut": "Sign Out",
+    "orderHistory": "Order History",
+    "noOrders": "You haven't placed any orders yet.",
+    "orderPlaced": "Placed on {date}"
   },
   "chat": {
     "supportTitle": "Customer Support",

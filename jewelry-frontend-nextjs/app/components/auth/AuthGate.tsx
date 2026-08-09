@@ -10,7 +10,7 @@ interface AuthGateProps {
   // tiếng Việt cứng, admin cũng truyền tiếng Việt cứng) — nên dù đổi ngôn ngữ,
   // dòng subtitle này không đổi theo. Giờ chỉ truyền NGỮ CẢNH, còn chữ thật lấy
   // từ messages/{locale}.json.
-  context?: 'checkout' | 'admin' | 'chat';
+  context?: 'checkout' | 'admin' | 'chat' | 'account';
   defaultMode?: 'login' | 'register';
   hideRegister?: boolean;
 }
@@ -57,7 +57,7 @@ export default function AuthGate({
           {mode === 'login' ? t('checkoutTitle') : t('createAccount')}
         </h2>
         <p className="text-xs text-neutral-500">
-          {context === 'admin' ? t('adminSubtitle') : context === 'chat' ? t('chatSubtitle') : t('checkoutSubtitle')}
+          {context === 'admin' ? t('adminSubtitle') : context === 'chat' ? t('chatSubtitle') : context === 'account' ? t('accountSubtitle') : t('checkoutSubtitle')}
         </p>
       </div>
 
