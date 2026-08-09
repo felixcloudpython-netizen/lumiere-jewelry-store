@@ -1,0 +1,10 @@
+# Thư mục này chứa các file tĩnh (favicon, ảnh...) được Next.js phục vụ trực tiếp
+# tại đường dẫn gốc (vd public/favicon.ico -> truy cập qua /favicon.ico).
+#
+# File .gitkeep này chỉ để đảm bảo Git lưu được thư mục — Git không lưu thư mục
+# rỗng, chỉ lưu file. Thiếu file này, thư mục public/ sẽ không tồn tại trên
+# GitHub, khiến Dockerfile lỗi ở bước `COPY --from=builder /app/public ./public`
+# (không tìm thấy thư mục để copy).
+#
+# Có thể xoá file này bất cứ lúc nào sau khi bạn đã thêm file thật vào thư mục
+# (vd favicon.ico, robots.txt...).
