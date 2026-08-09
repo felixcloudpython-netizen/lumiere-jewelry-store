@@ -2,9 +2,7 @@ import { Inter } from 'next/font/google';
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
 import '../globals.css';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
-import ChatWidget from '../components/chat/ChatWidget';
+import StorefrontChrome from '../components/StorefrontChrome';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 
@@ -26,10 +24,7 @@ export default async function LocaleLayout({
     <html lang={locale}>
       <body className={inter.variable}>
         <NextIntlClientProvider messages={messages} locale={locale}>
-          <Header />
-          {children}
-          <Footer />
-          <ChatWidget />
+          <StorefrontChrome>{children}</StorefrontChrome>
         </NextIntlClientProvider>
       </body>
     </html>

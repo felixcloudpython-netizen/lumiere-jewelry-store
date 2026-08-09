@@ -33,6 +33,18 @@ function slugify(text: string) {
     .replace(/(^-|-$)/g, "");
 }
 
+// Dùng riêng cho lúc đang gõ trực tiếp vào ô Slug — giống slugify() nhưng KHÔNG
+// xoá dấu gạch ngang ở cuối, để gõ được slug nhiều từ (vd "wedding-rings") theo
+// đúng nhịp gõ tự nhiên. slugify() đầy đủ chỉ áp dụng lúc tự động điền từ ô
+// Name, hoặc lúc submit form để dọn sạch lần cuối trước khi gửi lên server.
+function liveSlugify(text: string) {
+  return text
+    .toLowerCase()
+    .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9-]+/g, "-")
+    .replace(/-+/g, "-");
+}
+
 const inputClass = "w-full px-4 py-2.5 border border-neutral-200 text-sm outline-none focus:border-neutral-900 bg-white";
 const labelClass = "block text-[11px] tracking-[0.15em] uppercase text-neutral-500 mb-1.5";
 
@@ -104,7 +116,7 @@ function CategorySection({ categories, token, onChange }: { categories: Category
     if (!token) return;
     setError("");
     setIsSubmitting(true);
-    const body = { name, slug, parentId: parentId || undefined };
+    const body = { name, slug: slugify(slug), parentId: parentId || undefined };
     try {
       if (editingId) {
         await apiFetch(`/api/products/categories/${editingId}`, { method: "PATCH", token, body });
@@ -177,7 +189,7 @@ function CategorySection({ categories, token, onChange }: { categories: Category
           </div>
           <div>
             <label className={labelClass}>Slug</label>
-            <input type="text" required value={slug} onChange={(e) => { setSlug(e.target.value); setSlugTouched(true); }} className={inputClass} placeholder="e.g. rings" />
+            <input type="text" required value={slug} onChange={(e) => { setSlug(liveSlugify(e.target.value)); setSlugTouched(true); }} className={inputClass} placeholder="e.g. rings" />
           </div>
           <div>
             <label className={labelClass}>Parent Category (optional)</label>
@@ -232,7 +244,7 @@ function CollectionSection({ collections, token, onChange }: { collections: Coll
     setError("");
     setIsSubmitting(true);
     const body = {
-      name, slug,
+      name, slug: slugify(slug),
       description: description || undefined,
       story: story || undefined,
       heroImage: heroImage || undefined,
@@ -309,7 +321,7 @@ function CollectionSection({ collections, token, onChange }: { collections: Coll
           </div>
           <div>
             <label className={labelClass}>Slug</label>
-            <input type="text" required value={slug} onChange={(e) => { setSlug(e.target.value); setSlugTouched(true); }} className={inputClass} placeholder="e.g. aura" />
+            <input type="text" required value={slug} onChange={(e) => { setSlug(liveSlugify(e.target.value)); setSlugTouched(true); }} className={inputClass} placeholder="e.g. aura" />
           </div>
           <div>
             <label className={labelClass}>Description</label>
