@@ -3,6 +3,8 @@
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { formatVND } from '@/lib/currency';
+import { calculateShipping } from '@/lib/shipping';
+import { useCartStore } from '@/lib/store/cartStore';
 
 type CheckoutStep = 'information' | 'shipping' | 'payment';
 
@@ -30,6 +32,7 @@ interface CheckoutFormProps {
 
 export default function CheckoutForm({ step, onStepChange, onContinueToPayment, onShippingMethodChange, isProcessing, error }: CheckoutFormProps) {
   const t = useTranslations('checkout');
+  const subtotal = useCartStore((s) => s.totalPrice());
   const [formData, setFormData] = useState<ShippingFormData>({
     email: '', firstName: '', lastName: '', address: '', apartment: '', city: '', country: 'US',
     postalCode: '', phone: '', shippingMethod: 'standard',
@@ -43,9 +46,12 @@ export default function CheckoutForm({ step, onStepChange, onContinueToPayment, 
   const inputClass = "w-full px-4 py-3 border border-neutral-200 text-sm outline-none focus:border-neutral-900 transition-colors bg-white";
   const labelClass = "block text-[11px] tracking-[0.15em] uppercase text-neutral-500 mb-2";
 
+  // Giá hiển thị ở đây phải khớp đúng với logic thật ở backend
+  // (jewelry-api-express/src/lib/pricing.ts) — Express miễn phí khi đơn hàng
+  // đạt ngưỡng miễn phí vận chuyển, không còn hardcode 30.000₫ cố định như trước.
   const shippingMethods = [
-    { id: 'standard' as const, label: t('standardShipping'), time: t('days57'), price: 0 },
-    { id: 'express' as const, label: t('expressShipping'), time: t('days23'), price: 30000 },
+    { id: 'standard' as const, label: t('standardShipping'), time: t('days57'), price: calculateShipping('standard', subtotal) },
+    { id: 'express' as const, label: t('expressShipping'), time: t('days23'), price: calculateShipping('express', subtotal) },
   ];
 
   return (

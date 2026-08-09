@@ -11,17 +11,21 @@
  */
 
 // Khớp đúng 2 lựa chọn đã có sẵn ở UI (CheckoutForm.tsx, bước "shipping"):
-// Standard = miễn phí, Express = phí giao nhanh nội địa. Client chỉ được chọn
-// PHƯƠNG THỨC chứ không được gửi thẳng SỐ TIỀN — server tự tra bảng giá này.
-const SHIPPING_RATES = {
-  standard: 0,
-  express: 30_000, // 30.000₫
-} as const;
+// Standard = luôn miễn phí. Express = có phí, TRỪ KHI đơn hàng đạt ngưỡng miễn
+// phí vận chuyển (khớp đúng dòng chữ "Miễn phí vận chuyển cho đơn hàng trên
+// 2.000.000₫" hiển thị ở banner/trang sản phẩm — xem messages/*.json
+// "shippingBanner"/"freeShipping"). Đổi ngưỡng ở ĐÚNG 1 chỗ này, không cần sửa
+// gì thêm ở nơi khác.
+const FREE_SHIPPING_THRESHOLD = 2_000_000; // 2.000.000₫
+const EXPRESS_SHIPPING_RATE = 30_000; // 30.000₫
 
-export type ShippingMethod = keyof typeof SHIPPING_RATES;
+export type ShippingMethod = 'standard' | 'express';
 
-export function calculateShipping(method: string | undefined): number {
-  return SHIPPING_RATES[method as ShippingMethod] ?? SHIPPING_RATES.standard;
+export function calculateShipping(method: string | undefined, subtotal: number): number {
+  if (method === 'express') {
+    return subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : EXPRESS_SHIPPING_RATE;
+  }
+  return 0; // standard luôn miễn phí, không phụ thuộc ngưỡng
 }
 
 /**

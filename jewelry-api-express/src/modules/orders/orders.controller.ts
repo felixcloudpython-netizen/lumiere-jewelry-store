@@ -74,7 +74,7 @@ export const createOrder = async (req: AuthRequest, res: Response) => {
     subtotal += product.price * item.quantity;
   }
 
-  const shipping = calculateShipping(shippingMethod);
+  const shipping = calculateShipping(shippingMethod, subtotal);
   const discount = await resolveDiscount(couponCode, subtotal);
   const tax = Math.round((subtotal - discount) * 0.1);
   const total = subtotal + shipping + tax - discount;

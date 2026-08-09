@@ -4,10 +4,8 @@ import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import { useCartStore } from '@/lib/store/cartStore';
 import { formatVND } from '@/lib/currency';
+import { calculateShipping } from '@/lib/shipping';
 import { useState } from 'react';
-
-// Khớp đúng SHIPPING_RATES trong jewelry-api-express/src/lib/pricing.ts
-const SHIPPING_RATES: Record<'standard' | 'express', number> = { standard: 0, express: 30000 };
 
 interface OrderSummaryProps {
   shippingMethod?: 'standard' | 'express';
@@ -21,10 +19,10 @@ export default function OrderSummary({ shippingMethod = 'standard' }: OrderSumma
   const [promoMessage, setPromoMessage] = useState('');
 
   const subtotal = totalPrice();
-  // Khớp đúng bảng giá thật mà backend dùng để tính (xem
-  // jewelry-api-express/src/lib/pricing.ts) — trước đây tự đoán theo ngưỡng
-  // subtotal riêng, không liên quan gì đến phương thức ship khách thực sự chọn.
-  const shipping = SHIPPING_RATES[shippingMethod];
+  // Khớp đúng logic thật mà backend dùng để tính (xem
+  // jewelry-api-express/src/lib/pricing.ts) — Express miễn phí nếu subtotal đạt
+  // ngưỡng, Standard luôn miễn phí.
+  const shipping = calculateShipping(shippingMethod, subtotal);
   const total = subtotal + shipping;
 
   const applyPromo = () => {
