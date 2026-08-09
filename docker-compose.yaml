@@ -37,6 +37,16 @@ services:
     # riêng của nó (gán domain/URL cho từng service ngay trong UI). Khai `ports:`
     # thủ công ở đây dễ xung đột với cơ chế đó (theo khuyến cáo chính thức của
     # Coolify khi dùng Docker Compose build pack).
+    #
+    # networks: coolify — Database resource (Postgres) trong Coolify tự động
+    # nằm trên network `coolify` chung của toàn hệ thống, nhưng 1 "Docker
+    # Compose" Application resource như file này lại bị Coolify tách vào 1
+    # network RIÊNG theo UUID của chính resource đó. Thiếu dòng này, backend sẽ
+    # không bao giờ resolve được tên host Postgres (lỗi "Can't reach database
+    # server" dù DATABASE_URL đúng 100%), vì 2 network khác nhau không thấy
+    # nhau qua DNS nội bộ Docker.
+    networks:
+      - coolify
     restart: unless-stopped
 
   frontend:
@@ -56,4 +66,16 @@ services:
       NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: ${NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY}
     depends_on:
       - backend
+    # Không bắt buộc như backend (frontend không gọi database trực tiếp), nhưng
+    # thêm cho nhất quán và để phòng trường hợp cần gọi service nội bộ khác sau
+    # này.
+    networks:
+      - coolify
     restart: unless-stopped
+
+# Khai báo network `coolify` là network CÓ SẴN từ trước (do Coolify tự tạo cho
+# toàn hệ thống), không phải network mới cần tạo — nếu thiếu `external: true`,
+# Docker Compose sẽ cố tạo mới 1 network trùng tên và báo lỗi.
+networks:
+  coolify:
+    external: true
