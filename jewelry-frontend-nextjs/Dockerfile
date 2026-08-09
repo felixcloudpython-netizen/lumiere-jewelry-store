@@ -32,6 +32,15 @@ COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/package*.json ./
 COPY --from=builder /app/public ./public
+# next.config.js được Next.js đọc lại NGAY LÚC SERVER CHẠY THẬT (không chỉ lúc
+# build) — đây là nơi khai báo domain ảnh ngoài được phép tối ưu hoá
+# (images.remotePatterns, gồm res.cloudinary.com). Thiếu file này, Next.js dùng
+# cấu hình mặc định (không cho phép domain ảnh nào), nên mọi ảnh Cloudinary bị
+# endpoint /_next/image từ chối với lỗi "url parameter is not allowed", dù ảnh
+# đã upload lên Cloudinary thành công. i18n.ts đi kèm vì next.config.js có
+# tham chiếu tới nó qua createNextIntlPlugin('./i18n.ts').
+COPY --from=builder /app/next.config.js ./next.config.js
+COPY --from=builder /app/i18n.ts ./i18n.ts
 
 EXPOSE 3000
 
