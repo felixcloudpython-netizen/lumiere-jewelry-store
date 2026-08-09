@@ -6,8 +6,8 @@ import { Globe } from "lucide-react";
 import { locales, defaultLocale } from "@/i18n";
 
 const languages = [
-  { code: "en", label: "English" },
-  { code: "vi", label: "Tiếng Việt" },
+  { code: "en", label: "EN" },
+  { code: "vi", label: "VI" },
 ];
 
 export default function LanguageSwitcher() {
