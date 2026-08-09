@@ -33,8 +33,10 @@ services:
       CLOUDINARY_CLOUD_NAME: ${CLOUDINARY_CLOUD_NAME}
       CLOUDINARY_API_KEY: ${CLOUDINARY_API_KEY}
       CLOUDINARY_API_SECRET: ${CLOUDINARY_API_SECRET}
-    ports:
-      - "3001:3001"
+    # KHÔNG khai `ports:` — Coolify tự quản lý việc mở cổng ra ngoài qua proxy
+    # riêng của nó (gán domain/URL cho từng service ngay trong UI). Khai `ports:`
+    # thủ công ở đây dễ xung đột với cơ chế đó (theo khuyến cáo chính thức của
+    # Coolify khi dùng Docker Compose build pack).
     restart: unless-stopped
 
   frontend:
@@ -52,8 +54,6 @@ services:
     environment:
       NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
       NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: ${NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY}
-    ports:
-      - "3000:3000"
     depends_on:
       - backend
     restart: unless-stopped
