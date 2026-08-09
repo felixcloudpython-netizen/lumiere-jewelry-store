@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
+import { formatVND } from '@/lib/currency';
 
 type CheckoutStep = 'information' | 'shipping' | 'payment';
 
@@ -44,7 +45,7 @@ export default function CheckoutForm({ step, onStepChange, onContinueToPayment, 
 
   const shippingMethods = [
     { id: 'standard' as const, label: t('standardShipping'), time: t('days57'), price: 0 },
-    { id: 'express' as const, label: t('expressShipping'), time: t('days23'), price: 2500 },
+    { id: 'express' as const, label: t('expressShipping'), time: t('days23'), price: 30000 },
   ];
 
   return (
@@ -98,7 +99,7 @@ export default function CheckoutForm({ step, onStepChange, onContinueToPayment, 
                     <input type="radio" name="shipping" checked={formData.shippingMethod === method.id} onChange={() => updateField('shippingMethod', method.id)} className="accent-neutral-900" />
                     <div><p className="text-sm">{method.label}</p><p className="text-xs text-neutral-500">{method.time}</p></div>
                   </div>
-                  <span className="text-sm">{method.price === 0 ? t('free') : `$${(method.price / 100).toFixed(2)}`}</span>
+                  <span className="text-sm">{method.price === 0 ? t('free') : formatVND(method.price)}</span>
                 </label>
               ))}
             </div>

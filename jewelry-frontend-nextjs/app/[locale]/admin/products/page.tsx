@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import { Search, Plus, Pencil, Trash2, ChevronLeft, ChevronRight } from "lucide-react";
 import { apiFetch, ApiError } from "@/lib/api";
+import { formatVND } from "@/lib/currency";
 import { useAuthStore } from "@/lib/store/authStore";
 
 interface ProductListItem {
@@ -141,7 +142,7 @@ export default function AdminProducts() {
                   </div>
                 </td>
                 <td className="px-6 py-4 text-neutral-500">{product.sku}</td>
-                <td className="px-6 py-4">${(product.price / 100).toLocaleString()}</td>
+                <td className="px-6 py-4">{formatVND(product.price)}</td>
                 <td className="px-6 py-4">{product.inventory}</td>
                 <td className="px-6 py-4 text-neutral-500">{product.category?.name}</td>
                 <td className="px-6 py-4">

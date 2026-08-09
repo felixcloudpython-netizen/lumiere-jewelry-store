@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { Search, ChevronLeft, ChevronRight } from "lucide-react";
 import { apiFetch, ApiError } from "@/lib/api";
+import { formatVND } from "@/lib/currency";
 import { useAuthStore } from "@/lib/store/authStore";
 
 interface OrderListItem {
@@ -159,7 +160,7 @@ export default function AdminOrders() {
                     </div>
                   </td>
                   <td className="px-6 py-4">{order.items.reduce((sum, i) => sum + i.quantity, 0)}</td>
-                  <td className="px-6 py-4 font-medium">${(order.total / 100).toLocaleString()}</td>
+                  <td className="px-6 py-4 font-medium">{formatVND(order.total)}</td>
                   <td className="px-6 py-4">
                     <span className={`px-2 py-1 text-[10px] tracking-wider uppercase rounded ${
                       order.paymentStatus === "PAID" ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"

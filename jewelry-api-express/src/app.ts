@@ -30,9 +30,6 @@ app.use(helmet());
 app.use(cors({ origin: process.env.CLIENT_URL || 'http://localhost:3000', credentials: true }));
 app.use(morgan('dev'));
 
-// Stripe webhook needs raw body BEFORE express.json()
-app.use('/api/payments/webhook', express.raw({ type: 'application/json' }));
-
 app.use(express.json({ limit: '10mb' }));
 
 app.get('/health', (_req, res) => res.json({ status: 'ok', timestamp: new Date().toISOString() }));

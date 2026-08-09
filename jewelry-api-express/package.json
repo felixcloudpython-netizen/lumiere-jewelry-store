@@ -9,13 +9,16 @@
     "db:migrate": "prisma migrate dev",
     "db:seed": "tsx prisma/seed.ts",
     "db:promote-admin": "tsx prisma/promoteAdmin.ts",
+    "payos:register-webhook": "tsx prisma/registerPayosWebhook.ts",
     "db:studio": "prisma studio",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage"
   },
   "dependencies": {
+    "@payos/node": "^2.0.5",
     "@prisma/client": "^5.15.0",
+    "@prisma/engines": "^5.22.0",
     "bcryptjs": "^2.4.3",
     "cloudinary": "^2.0.0",
     "cors": "^2.8.5",
@@ -28,7 +31,6 @@
     "multer": "^1.4.5-lts.1",
     "resend": "^3.0.0",
     "socket.io": "^4.7.0",
-    "stripe": "^15.0.0",
     "swagger-jsdoc": "^6.2.0",
     "swagger-ui-express": "^5.0.0",
     "zod": "^3.23.8"

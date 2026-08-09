@@ -2,20 +2,29 @@
 
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
-import StripeProvider from "@/app/components/stripe/StripeProvider";
-import PaymentForm from "@/app/components/stripe/PaymentForm";
 import { apiFetch, ApiError } from "@/lib/api";
 import { useAuthStore } from "@/lib/store/authStore";
 
 interface PaymentStepProps {
   orderId: string;
-  onSuccess: () => void;
 }
 
-export default function PaymentStep({ orderId, onSuccess }: PaymentStepProps) {
+/**
+ * Khác hẳn với Stripe trước đây (nhúng form thẻ ngay trong trang qua Stripe
+ * Elements), payOS hoạt động theo mô hình CHUYỂN HƯỚNG TOÀN TRANG: khách được
+ * đưa sang 1 trang do payOS host (hiện mã QR chuyển khoản ngân hàng), thanh
+ * toán xong payOS tự đưa khách quay lại `returnUrl` (trỏ về /checkout/success
+ * — xem payos.service.ts phía backend). Không có cách nào nhúng payOS ngay
+ * trong trang của mình như Stripe Elements.
+ *
+ * Việc XÁC NHẬN thanh toán thành công thật sự nằm ở webhook phía backend
+ * (payos.service.ts -> handlePaymentWebhook), không phải ở component này —
+ * trang /checkout/success chỉ ĐỌC LẠI trạng thái đơn hàng từ server để hiển
+ * thị, không tự ý coi là thành công chỉ vì được redirect tới đó.
+ */
+export default function PaymentStep({ orderId }: PaymentStepProps) {
   const t = useTranslations("checkout");
   const token = useAuthStore((s) => s.token);
-  const [clientSecret, setClientSecret] = useState<string | null>(null);
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -24,17 +33,16 @@ export default function PaymentStep({ orderId, onSuccess }: PaymentStepProps) {
       return;
     }
 
-    // Gọi thẳng domain API thật (NEXT_PUBLIC_API_URL) kèm Bearer token — trước đây
-    // dùng đường dẫn tương đối "/api/payments/create-intent", vốn sẽ gọi nhầm vào
-    // chính domain frontend (không có route Next.js API nào khớp) và luôn 404 ở
-    // production, vì frontend/backend nằm trên 2 domain khác nhau; đồng thời route
-    // này bắt buộc phải có Bearer token (payments.routes.ts yêu cầu `authenticate`).
-    apiFetch<{ clientSecret: string }>("/api/payments/create-intent", {
+    apiFetch<{ checkoutUrl: string }>("/api/payments/create-checkout", {
       method: "POST",
       token,
       body: { orderId },
     })
-      .then((data) => setClientSecret(data.clientSecret))
+      .then((data) => {
+        // Chuyển hướng toàn trang sang trang thanh toán payOS — không phải
+        // gọi API ngầm, đây là điều hướng trình duyệt thật sự.
+        window.location.href = data.checkoutUrl;
+      })
       .catch((err) => setError(err instanceof ApiError ? err.message : t("paymentInitError")));
   }, [orderId, token, t]);
 
@@ -46,21 +54,10 @@ export default function PaymentStep({ orderId, onSuccess }: PaymentStepProps) {
     );
   }
 
-  if (!clientSecret) {
-    return (
-      <div className="flex items-center justify-center py-12">
-        <div className="animate-spin w-6 h-6 border-2 border-neutral-900 border-t-transparent rounded-full" />
-      </div>
-    );
-  }
-
   return (
-    <StripeProvider clientSecret={clientSecret}>
-      <PaymentForm
-        orderId={orderId}
-        onSuccess={onSuccess}
-        onError={setError}
-      />
-    </StripeProvider>
+    <div className="flex flex-col items-center justify-center py-12 gap-4">
+      <div className="animate-spin w-6 h-6 border-2 border-neutral-900 border-t-transparent rounded-full" />
+      <p className="text-sm text-neutral-500">{t("redirectingToPayment")}</p>
+    </div>
   );
 }

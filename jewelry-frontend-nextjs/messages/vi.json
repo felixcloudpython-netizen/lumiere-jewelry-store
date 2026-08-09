@@ -126,6 +126,7 @@
     "includingTaxes": "Đã bao gồm thuế áp dụng. Tổng cuối cùng sẽ được tính khi thanh toán.",
     "needLoginToPay": "Bạn cần đăng nhập để thanh toán.",
     "paymentInitError": "Không thể khởi tạo thanh toán",
+    "redirectingToPayment": "Đang chuyển sang trang thanh toán...",
     "placeOrderError": "Không thể đặt hàng. Vui lòng thử lại.",
     "emptyBagTitle": "Giỏ hàng của bạn đang trống",
     "countries": {
@@ -138,7 +139,15 @@
     "success": {
       "title": "Đặt hàng thành công",
       "subtitle": "Cảm ơn bạn đã mua hàng. Chúng tôi đã gửi email xác nhận đơn hàng và sẽ báo khi đơn được giao đi.",
-      "continueShopping": "Tiếp tục mua sắm"
+      "continueShopping": "Tiếp tục mua sắm",
+      "verifying": "Đang xác minh thanh toán...",
+      "verifyingDesc": "Chỉ mất vài giây thôi.",
+      "failedTitle": "Thanh toán thất bại",
+      "failedDesc": "Không thể hoàn tất thanh toán. Giỏ hàng của bạn vẫn được giữ nguyên để thử lại.",
+      "tryAgain": "Thử lại",
+      "processingTitle": "Đang xử lý",
+      "processingDesc": "Thanh toán của bạn đang mất nhiều thời gian hơn bình thường để xác nhận. Chúng tôi sẽ cập nhật đơn hàng ngay khi có xác nhận — kiểm tra trong tài khoản để xem trạng thái mới nhất.",
+      "viewOrders": "Xem đơn hàng của tôi"
     }
   },
   "auth": {

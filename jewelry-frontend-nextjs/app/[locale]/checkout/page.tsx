@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { useTranslations, useLocale } from 'next-intl';
 import { useCartStore } from '@/lib/store/cartStore';
 import { useAuthStore } from '@/lib/store/authStore';
@@ -26,7 +25,6 @@ export default function CheckoutPage() {
   const { items } = useCartStore();
   const token = useAuthStore((s) => s.token);
   const isAuthHydrated = useAuthStore((s) => s.isHydrated);
-  const router = useRouter();
 
   const [step, setStep] = useState<CheckoutStep>('information');
   const [isProcessing, setIsProcessing] = useState(false);
@@ -107,13 +105,6 @@ export default function CheckoutPage() {
     }
   };
 
-  const handlePaymentSuccess = () => {
-    // Trước đây router.push('/checkout/success') thiếu tiền tố locale — nếu
-    // đang ở bản tiếng Việt (/vi/checkout), thanh toán xong sẽ bị đẩy về trang
-    // success bản tiếng Anh mặc định thay vì giữ đúng "/vi/checkout/success".
-    router.push(`/${locale}/checkout/success`);
-  };
-
   const steps: { key: CheckoutStep; label: string }[] = [
     { key: 'information', label: t('information') },
     { key: 'shipping', label: t('shipping') },
@@ -143,7 +134,7 @@ export default function CheckoutPage() {
             </div>
 
             {step === 'payment' && orderId ? (
-              <PaymentStep orderId={orderId} onSuccess={handlePaymentSuccess} />
+              <PaymentStep orderId={orderId} />
             ) : (
               <CheckoutForm
                 step={step}

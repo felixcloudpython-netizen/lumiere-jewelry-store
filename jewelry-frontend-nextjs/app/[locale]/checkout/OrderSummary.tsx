@@ -3,9 +3,11 @@
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import { useCartStore } from '@/lib/store/cartStore';
+import { formatVND } from '@/lib/currency';
 import { useState } from 'react';
 
-const SHIPPING_RATES: Record<'standard' | 'express', number> = { standard: 0, express: 2500 };
+// Khớp đúng SHIPPING_RATES trong jewelry-api-express/src/lib/pricing.ts
+const SHIPPING_RATES: Record<'standard' | 'express', number> = { standard: 0, express: 30000 };
 
 interface OrderSummaryProps {
   shippingMethod?: 'standard' | 'express';
@@ -28,7 +30,7 @@ export default function OrderSummary({ shippingMethod = 'standard' }: OrderSumma
   const applyPromo = () => {
     // Backend hiện chưa có hệ thống mã giảm giá thật (xem resolveDiscount() trong
     // pricing.ts luôn trả về 0) — trước đây ô này tự trừ 10% chỉ trên UI trong khi
-    // số tiền thật bị trừ qua Stripe không hề giảm, khiến khách hiểu nhầm. Thông báo
+    // số tiền thật bị trừ qua cổng thanh toán không hề giảm, khiến khách hiểu nhầm. Thông báo
     // rõ ràng thay vì áp một mức giảm giá giả không có thật.
     setPromoMessage(promoCode ? t('promoComingSoon') : '');
   };
@@ -50,7 +52,7 @@ export default function OrderSummary({ shippingMethod = 'standard' }: OrderSumma
             <div className="flex-1 min-w-0">
               <p className="text-sm truncate">{item.product.name}</p>
               {item.selectedSize && <p className="text-[11px] text-neutral-500">{tCart('size')}: {item.selectedSize}</p>}
-              <p className="text-xs mt-0.5">${((item.product.price * item.quantity) / 100).toLocaleString()}</p>
+              <p className="text-xs mt-0.5">{formatVND(item.product.price * item.quantity)}</p>
             </div>
           </div>
         ))}
@@ -62,9 +64,9 @@ export default function OrderSummary({ shippingMethod = 'standard' }: OrderSumma
       </div>
       {promoMessage && <p className="text-xs text-neutral-500 -mt-4 mb-6">{promoMessage}</p>}
       <div className="space-y-3 text-sm border-t pt-4">
-        <div className="flex justify-between"><span className="text-neutral-500">{tCart('subtotal')}</span><span>${(subtotal / 100).toLocaleString()}</span></div>
-        <div className="flex justify-between"><span className="text-neutral-500">{t('shipping')}</span><span>{shipping === 0 ? t('free') : `$${(shipping / 100).toFixed(2)}`}</span></div>
-        <div className="flex justify-between text-base font-medium pt-3 border-t"><span>{t('total')}</span><span>${(total / 100).toLocaleString()}</span></div>
+        <div className="flex justify-between"><span className="text-neutral-500">{tCart('subtotal')}</span><span>{formatVND(subtotal)}</span></div>
+        <div className="flex justify-between"><span className="text-neutral-500">{t('shipping')}</span><span>{shipping === 0 ? t('free') : formatVND(shipping)}</span></div>
+        <div className="flex justify-between text-base font-medium pt-3 border-t"><span>{t('total')}</span><span>{formatVND(total)}</span></div>
       </div>
       <p className="text-[10px] text-neutral-400 mt-4 leading-relaxed">{t('includingTaxes')}</p>
     </div>

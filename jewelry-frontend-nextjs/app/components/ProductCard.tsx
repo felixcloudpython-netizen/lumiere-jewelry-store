@@ -4,6 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useLocale, useTranslations } from 'next-intl';
 import { Product } from '@/types';
+import { formatVND } from '@/lib/currency';
 
 interface ProductCardProps {
   product: Product;
@@ -37,9 +38,9 @@ export default function ProductCard({ product }: ProductCardProps) {
       <h3 className="text-sm font-medium truncate group-hover:underline underline-offset-4">{product.name}</h3>
       <p className="text-xs text-neutral-500 mt-0.5">{product.category.name}</p>
       <div className="flex items-baseline gap-2 mt-1.5">
-        <span className="text-sm">${(product.price / 100).toLocaleString()}</span>
+        <span className="text-sm">{formatVND(product.price)}</span>
         {product.comparePrice && (
-          <span className="text-xs text-neutral-400 line-through">${(product.comparePrice / 100).toLocaleString()}</span>
+          <span className="text-xs text-neutral-400 line-through">{formatVND(product.comparePrice)}</span>
         )}
       </div>
     </Link>

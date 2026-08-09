@@ -60,7 +60,7 @@ export const createOrderSchema = z.object({
   // Client chỉ được CHỌN phương thức ship, không được gửi thẳng SỐ TIỀN ship.
   // `discount` bằng số cũng KHÔNG còn được nhận từ client nữa — trước đây client có thể
   // tự gửi số tiền `discount` để thao túng `total` (ví dụ set gần bằng subtotal để mua
-  // gần như miễn phí), vì `total` được dùng thẳng làm `amount` cho Stripe PaymentIntent.
+  // gần như miễn phí), vì `total` được dùng thẳng làm `amount` khi tạo yêu cầu thanh toán.
   // Nếu client vẫn gửi `shipping`/`discount` dạng số, Zod sẽ tự loại bỏ (strip); server
   // tự tra bảng giá + tự tính discount trong controller (xem src/lib/pricing.ts).
   shippingMethod: z.enum(['standard', 'express']).default('standard'),

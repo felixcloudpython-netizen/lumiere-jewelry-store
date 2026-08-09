@@ -1,29 +1,33 @@
 import { Router } from 'express';
-import express from 'express';
 import { authenticate } from '@/middleware/auth';
-import { createPaymentIntent, handleWebhookEvent } from './stripe.service';
+import { createCheckoutLink, handlePaymentWebhook } from './payos.service';
 
 const router = Router();
 
-// Create payment intent (requires auth)
-router.post('/create-intent', authenticate, async (req, res, next) => {
+// Tạo link thanh toán (yêu cầu đăng nhập)
+router.post('/create-checkout', authenticate, async (req, res, next) => {
   try {
     const { orderId } = req.body;
-    const result = await createPaymentIntent(orderId);
+    const result = await createCheckoutLink(orderId);
     res.json(result);
   } catch (err) {
     next(err);
   }
 });
 
-// Stripe webhook (raw body needed)
-router.post('/webhook', express.raw({ type: 'application/json' }), async (req, res, next) => {
+// Webhook payOS — KHÔNG cần raw body như Stripe trước đây (payOS xác thực chữ
+// ký trên object JSON đã parse, không phải trên chuỗi byte thô), nên dùng
+// chung express.json() toàn cục là đủ, không cần middleware riêng trong app.ts.
+router.post('/webhook', async (req, res) => {
   try {
-    const signature = req.headers['stripe-signature'] as string;
-    await handleWebhookEvent(req.body, signature);
-    res.json({ received: true });
+    await handlePaymentWebhook(req.body);
+    // payOS yêu cầu phản hồi mã 2XX để xác nhận đã nhận webhook thành công —
+    // luôn trả 200 dù xử lý nội bộ có lỗi (log lỗi riêng), để tránh payOS hiểu
+    // nhầm là chưa nhận được rồi gửi lại liên tục.
+    res.status(200).json({ received: true });
   } catch (err) {
-    res.status(400).json({ error: (err as Error).message });
+    console.error('payOS webhook error:', err);
+    res.status(200).json({ received: true });
   }
 });
 

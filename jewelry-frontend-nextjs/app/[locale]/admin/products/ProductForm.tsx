@@ -157,12 +157,12 @@ export default function ProductForm({ mode, productId, initialData }: ProductFor
 
         <div className="grid grid-cols-3 gap-6">
           <div>
-            <label className={labelClass}>Price (cents)</label>
-            <input type="number" value={formData.price} onChange={e => setFormData({...formData, price: e.target.value})} className={inputClass} placeholder="1250000" required min={1} />
+            <label className={labelClass}>Price (VNĐ)</label>
+            <input type="number" value={formData.price} onChange={e => setFormData({...formData, price: e.target.value})} className={inputClass} placeholder="3890000" required min={1} />
           </div>
           <div>
-            <label className={labelClass}>Compare Price</label>
-            <input type="number" value={formData.comparePrice} onChange={e => setFormData({...formData, comparePrice: e.target.value})} className={inputClass} placeholder="1380000" min={1} />
+            <label className={labelClass}>Compare Price (VNĐ)</label>
+            <input type="number" value={formData.comparePrice} onChange={e => setFormData({...formData, comparePrice: e.target.value})} className={inputClass} placeholder="5190000" min={1} />
           </div>
           <div>
             <label className={labelClass}>SKU</label>

@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useTranslations, useLocale } from 'next-intl';
 import { Product } from '@/types';
 import { useCartStore } from '@/lib/store/cartStore';
+import { formatVND } from '@/lib/currency';
 import { Heart, Share2, Truck, Shield, RotateCcw } from 'lucide-react';
 import SizeGuide from './SizeGuide';
 
@@ -57,9 +58,9 @@ export default function ProductInfo({ product }: ProductInfoProps) {
       <p className="text-xs tracking-[0.2em] uppercase text-neutral-500 mb-4">{product.collection?.name} {t('collection')}</p>
 
       <div className="flex items-baseline gap-3 mb-6">
-        <span className="text-xl font-medium">${(product.price / 100).toLocaleString()}</span>
+        <span className="text-xl font-medium">{formatVND(product.price)}</span>
         {product.comparePrice && (
-          <span className="text-sm text-neutral-400 line-through">${(product.comparePrice / 100).toLocaleString()}</span>
+          <span className="text-sm text-neutral-400 line-through">{formatVND(product.comparePrice)}</span>
         )}
       </div>
 

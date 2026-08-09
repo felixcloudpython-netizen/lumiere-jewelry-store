@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { Search, ChevronLeft, ChevronRight, Mail, Phone } from "lucide-react";
 import { apiFetch, ApiError } from "@/lib/api";
+import { formatVND } from "@/lib/currency";
 import { useAuthStore } from "@/lib/store/authStore";
 
 interface Customer {
@@ -115,7 +116,7 @@ export default function AdminCustomers() {
                   </span>
                 </td>
                 <td className="px-6 py-4">{c.orderCount}</td>
-                <td className="px-6 py-4 font-medium">${(c.totalSpent / 100).toLocaleString()}</td>
+                <td className="px-6 py-4 font-medium">{formatVND(c.totalSpent)}</td>
                 <td className="px-6 py-4 text-neutral-500">{new Date(c.createdAt).toLocaleDateString()}</td>
               </tr>
             ))}

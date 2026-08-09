@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { DollarSign, Package, ShoppingCart, Users, TrendingUp, TrendingDown } from "lucide-react";
 import { apiFetch, ApiError } from "@/lib/api";
+import { formatVND } from "@/lib/currency";
 import { useAuthStore } from "@/lib/store/authStore";
 
 interface DashboardOverview {
@@ -72,7 +73,7 @@ export default function AdminDashboard() {
   if (!overview) return null;
 
   const stats = [
-    { label: "Total Revenue", value: `$${(overview.totalRevenue / 100).toLocaleString()}`, change: overview.revenueChange, up: overview.revenueChange >= 0, icon: DollarSign },
+    { label: "Total Revenue", value: formatVND(overview.totalRevenue), change: overview.revenueChange, up: overview.revenueChange >= 0, icon: DollarSign },
     { label: "Total Orders", value: overview.totalOrders.toLocaleString(), change: overview.ordersChange, up: overview.ordersChange >= 0, icon: ShoppingCart },
     { label: "Products", value: overview.totalProducts.toLocaleString(), change: null, up: true, icon: Package },
     { label: "Customers", value: overview.totalCustomers.toLocaleString(), change: null, up: true, icon: Users },
@@ -130,7 +131,7 @@ export default function AdminDashboard() {
               <tr key={order.id} className="border-b border-neutral-50 hover:bg-neutral-50">
                 <td className="px-6 py-4 font-medium">{order.id.slice(0, 8)}</td>
                 <td className="px-6 py-4">{order.user ? `${order.user.firstName ?? ''} ${order.user.lastName ?? ''}`.trim() || order.user.email : order.email}</td>
-                <td className="px-6 py-4">${(order.total / 100).toLocaleString()}</td>
+                <td className="px-6 py-4">{formatVND(order.total)}</td>
                 <td className="px-6 py-4">
                   <span className={`px-2 py-1 text-[10px] tracking-wider uppercase rounded ${statusColors[order.status] ?? 'bg-neutral-100 text-neutral-700'}`}>
                     {order.status}

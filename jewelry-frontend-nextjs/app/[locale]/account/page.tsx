@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { useAuthStore } from '@/lib/store/authStore';
 import { apiFetch } from '@/lib/api';
+import { formatVND } from '@/lib/currency';
 import AuthGate from '@/app/components/auth/AuthGate';
 import { LogOut } from 'lucide-react';
 
@@ -93,7 +94,7 @@ export default function AccountPage() {
                     <p className="text-xs text-neutral-500">{t('orderPlaced', { date: new Date(order.createdAt).toLocaleDateString() })}</p>
                   </div>
                   <div className="text-right">
-                    <p className="text-sm">${(order.total / 100).toLocaleString()}</p>
+                    <p className="text-sm">{formatVND(order.total)}</p>
                     <p className="text-xs text-neutral-500 uppercase">{order.status}</p>
                   </div>
                 </div>

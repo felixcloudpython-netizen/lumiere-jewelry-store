@@ -105,7 +105,13 @@ model Order {
   tax             Int           @default(0)
   total           Int
   items           OrderItem[]
-  paymentIntentId String?
+  // payOS bắt buộc "orderCode" là số nguyên duy nhất (không chấp nhận cuid dạng
+  // chuỗi như Order.id) — dùng autoincrement() để Postgres tự cấp số tăng dần,
+  // không trùng nhau, không cần tự sinh tay.
+  orderCode       Int           @unique @default(autoincrement())
+  // Trước đây là "paymentIntentId" (thuật ngữ riêng của Stripe) — đổi tên cho
+  // đúng khái niệm của payOS, lưu paymentLinkId trả về sau khi tạo link thanh toán.
+  paymentLinkId   String?
   trackingNumber  String?
   notes           String?
   createdAt       DateTime      @default(now())

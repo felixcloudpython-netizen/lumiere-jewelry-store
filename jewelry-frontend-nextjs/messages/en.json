@@ -126,6 +126,7 @@
     "includingTaxes": "Including applicable taxes. Final total will be calculated at checkout.",
     "needLoginToPay": "You need to sign in to pay.",
     "paymentInitError": "Failed to initialize payment",
+    "redirectingToPayment": "Redirecting you to payment...",
     "placeOrderError": "Could not place order. Please try again.",
     "emptyBagTitle": "Your bag is empty",
     "countries": {
@@ -138,7 +139,15 @@
     "success": {
       "title": "Order confirmed",
       "subtitle": "Thank you for your purchase. We've sent a confirmation email and will let you know when your order ships.",
-      "continueShopping": "Continue Shopping"
+      "continueShopping": "Continue Shopping",
+      "verifying": "Verifying your payment...",
+      "verifyingDesc": "This will only take a moment.",
+      "failedTitle": "Payment failed",
+      "failedDesc": "Your payment could not be completed. Your cart has been kept so you can try again.",
+      "tryAgain": "Try Again",
+      "processingTitle": "Still processing",
+      "processingDesc": "Your payment is taking longer than usual to confirm. We'll update your order as soon as it's confirmed — check your account for the latest status.",
+      "viewOrders": "View My Orders"
     }
   },
   "auth": {

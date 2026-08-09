@@ -6,6 +6,7 @@ import {
   BarChart, Bar, PieChart, Pie, Cell, Legend,
 } from "recharts";
 import { TrendingUp, TrendingDown, DollarSign, ShoppingCart, Users, Package } from "lucide-react";
+import { formatVND } from "@/lib/currency";
 import { apiFetch, ApiError } from "@/lib/api";
 import { useAuthStore } from "@/lib/store/authStore";
 
@@ -57,7 +58,7 @@ export default function AnalyticsPage() {
   const { overview, topProducts, salesByDay, salesByCategory } = data;
 
   const stats = [
-    { label: "Total Revenue", value: `$${(overview.totalRevenue / 100).toLocaleString()}`, change: overview.revenueChange, up: overview.revenueChange > 0, icon: DollarSign },
+    { label: "Total Revenue", value: formatVND(overview.totalRevenue), change: overview.revenueChange, up: overview.revenueChange > 0, icon: DollarSign },
     { label: "Total Orders", value: overview.totalOrders.toLocaleString(), change: overview.ordersChange, up: overview.ordersChange > 0, icon: ShoppingCart },
     { label: "Customers", value: overview.totalCustomers.toLocaleString(), change: 0, up: true, icon: Users },
     { label: "Products", value: overview.totalProducts.toString(), change: 0, up: true, icon: Package },
@@ -107,10 +108,10 @@ export default function AnalyticsPage() {
             </defs>
             <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
             <XAxis dataKey="date" tick={{ fontSize: 11 }} axisLine={false} tickLine={false} />
-            <YAxis tick={{ fontSize: 11 }} axisLine={false} tickLine={false} tickFormatter={(v) => `$${(v / 1000).toFixed(0)}k`} />
+            <YAxis tick={{ fontSize: 11 }} axisLine={false} tickLine={false} tickFormatter={(v) => `${(v / 1000000).toFixed(0)}tr`} />
             <Tooltip
               contentStyle={{ border: "1px solid #e5e5e5", borderRadius: 0, fontSize: 12 }}
-              formatter={(value: number) => [`$${(value / 100).toLocaleString()}`, "Revenue"]}
+              formatter={(value: number) => [formatVND(value), "Revenue"]}
             />
             <Area type="monotone" dataKey="revenue" stroke="#1a1a1a" strokeWidth={2} fillOpacity={1} fill="url(#colorRevenue)" />
           </AreaChart>
@@ -137,7 +138,7 @@ export default function AnalyticsPage() {
                   <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                 ))}
               </Pie>
-              <Tooltip formatter={(value: number) => `$${(value / 100).toLocaleString()}`} />
+              <Tooltip formatter={(value: number) => formatVND(value)} />
               <Legend verticalAlign="bottom" height={36} iconType="circle" />
             </PieChart>
           </ResponsiveContainer>
@@ -181,7 +182,7 @@ export default function AnalyticsPage() {
                   </div>
                 </td>
                 <td className="px-6 py-4 text-right">{product.quantity}</td>
-                <td className="px-6 py-4 text-right font-medium">${(product.revenue / 100).toLocaleString()}</td>
+                <td className="px-6 py-4 text-right font-medium">{formatVND(product.revenue)}</td>
               </tr>
             ))}
           </tbody>

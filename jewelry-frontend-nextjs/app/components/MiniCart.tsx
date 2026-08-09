@@ -4,6 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useTranslations, useLocale } from 'next-intl';
 import { useCartStore } from '@/lib/store/cartStore';
+import { formatVND } from '@/lib/currency';
 import { X, Plus, Minus } from 'lucide-react';
 
 export default function MiniCart() {
@@ -43,7 +44,7 @@ export default function MiniCart() {
                         <div>
                           <h3 className="text-sm font-medium truncate">{item.product.name}</h3>
                           {item.selectedSize && <p className="text-xs text-neutral-500 mt-0.5">{t('size')}: {item.selectedSize}</p>}
-                          <p className="text-sm mt-1">${(item.product.price / 100).toLocaleString()}</p>
+                          <p className="text-sm mt-1">{formatVND(item.product.price)}</p>
                         </div>
                         <button onClick={() => removeItem(item.product.id, item.selectedSize)} className="text-neutral-400 hover:text-neutral-900 p-1"><X size={14} /></button>
                       </div>
@@ -60,7 +61,7 @@ export default function MiniCart() {
           </div>
           {items.length > 0 && (
             <div className="border-t px-6 py-5 space-y-4">
-              <div className="flex justify-between items-center"><span className="text-sm">{t('subtotal')}</span><span className="text-sm font-medium">${(total / 100).toLocaleString()}</span></div>
+              <div className="flex justify-between items-center"><span className="text-sm">{t('subtotal')}</span><span className="text-sm font-medium">{formatVND(total)}</span></div>
               <p className="text-[11px] text-neutral-500">{t('shippingNote')}</p>
               {/* Trước đây href="/checkout" không có tiền tố locale — nếu đang ở
                   bản tiếng Việt (/vi/...), bấm vào sẽ nhảy sang bản tiếng Anh mặc
