@@ -25,7 +25,7 @@ export default function ProductInfo({ product }: ProductInfoProps) {
   const { addItem, toggleCart } = useCartStore();
 
   const handleAddToCart = () => {
-    if (!selectedSize) return;
+    if (product.sizes.length > 0 && !selectedSize) return;
     addItem(product, selectedSize);
     setAddedToCart(true);
     setTimeout(() => setAddedToCart(false), 2000);
