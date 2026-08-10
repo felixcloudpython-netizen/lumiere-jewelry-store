@@ -221,6 +221,20 @@
     "noOrders": "You haven't placed any orders yet.",
     "orderPlaced": "Placed on {date}"
   },
+  "accountAuth": {
+    "signIn": "Sign In",
+    "createAccount": "Create an account",
+    "emailLabel": "Email address",
+    "passwordLabel": "Password",
+    "signInButton": "Sign In",
+    "requiredFields": "*Required fields",
+    "createAccountHeading": "Create an Account",
+    "benefit1": "Track your order history",
+    "benefit2": "Receive order confirmation emails",
+    "createAccountButton": "Create an Account",
+    "firstName": "First name",
+    "lastName": "Last name"
+  },
   "chat": {
     "supportTitle": "Customer Support",
     "online": "Online",

@@ -221,6 +221,20 @@
     "noOrders": "Bạn chưa có đơn hàng nào.",
     "orderPlaced": "Đặt ngày {date}"
   },
+  "accountAuth": {
+    "signIn": "Đăng nhập",
+    "createAccount": "Tạo tài khoản",
+    "emailLabel": "Địa chỉ email",
+    "passwordLabel": "Mật khẩu",
+    "signInButton": "Đăng nhập",
+    "requiredFields": "*Trường bắt buộc",
+    "createAccountHeading": "Tạo tài khoản",
+    "benefit1": "Theo dõi lịch sử đơn hàng",
+    "benefit2": "Nhận email xác nhận đơn hàng",
+    "createAccountButton": "Tạo tài khoản",
+    "firstName": "Tên",
+    "lastName": "Họ"
+  },
   "chat": {
     "supportTitle": "Hỗ trợ khách hàng",
     "online": "Trực tuyến",

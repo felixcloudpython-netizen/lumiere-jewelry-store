@@ -6,7 +6,7 @@ import { useTranslations } from 'next-intl';
 import { useAuthStore } from '@/lib/store/authStore';
 import { apiFetch } from '@/lib/api';
 import { formatVND } from '@/lib/currency';
-import AuthGate from '@/app/components/auth/AuthGate';
+import AccountAuth from './AccountAuth';
 import { LogOut } from 'lucide-react';
 
 interface OrderSummary {
@@ -53,9 +53,9 @@ export default function AccountPage() {
 
   if (!token) {
     return (
-      <main className="pt-32 pb-20 min-h-screen bg-neutral-50">
-        <div className="max-w-md mx-auto px-6">
-          <AuthGate context="account" />
+      <main className="pt-28 pb-20 min-h-screen bg-neutral-50">
+        <div className="max-w-4xl mx-auto px-6">
+          <AccountAuth />
         </div>
       </main>
     );
