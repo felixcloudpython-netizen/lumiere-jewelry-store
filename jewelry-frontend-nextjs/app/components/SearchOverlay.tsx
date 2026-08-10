@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useTranslations, useLocale } from 'next-intl';
 import { Search, X, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { apiFetch } from '@/lib/api';
 import { Product } from '@/types';
 
@@ -16,20 +17,33 @@ interface ProductsResponse {
   data: Product[];
 }
 
-const POPULAR_SEARCHES = ['Ring', 'Necklace', 'Bracelet', 'Earrings'];
-
 export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
   const t = useTranslations('search');
+  const tNav = useTranslations('nav');
   const locale = useLocale();
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<Product[]>([]);
   const [loading, setLoading] = useState(false);
+  const [spotlight, setSpotlight] = useState<Product[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // Dùng lại đúng tên category thật (đã có bản dịch sẵn) thay vì nhãn tiếng Anh
+  // hardcode trước đây — bấm vào tự điền đúng từ khoá đang được dùng thật trong
+  // hệ thống danh mục, không phải chuỗi tuỳ ý không liên quan tới dữ liệu.
+  const popularTags = [
+    tNav('menu.necklaces'), tNav('menu.bracelets'), tNav('menu.rings'), tNav('menu.earrings'),
+  ];
 
   useEffect(() => {
     if (isOpen) {
       setTimeout(() => inputRef.current?.focus(), 100);
       document.body.style.overflow = 'hidden';
+      // "Nổi bật" — lấy thật sản phẩm bán chạy (isBestseller) từ API, không phải
+      // ảnh marketing dàn dựng sẵn (khác với ví dụ tham khảo) vì cửa hàng chưa có
+      // hệ thống quản lý nội dung/ảnh chiến dịch riêng — dùng đúng dữ liệu có sẵn.
+      apiFetch<ProductsResponse>('/api/products?bestseller=true&limit=4')
+        .then((res) => setSpotlight(res.data))
+        .catch(() => setSpotlight([]));
     } else {
       document.body.style.overflow = '';
       setQuery('');
@@ -44,10 +58,6 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
     return () => window.removeEventListener('keydown', handleEsc);
   }, [onClose]);
 
-  // Trước đây tìm trong `mockResults` — mảng 4 sản phẩm giả hardcode sẵn, không
-  // liên quan gì tới sản phẩm thật trong DB. Giờ gọi thật GET /api/products
-  // ?search=... (route public, không cần đăng nhập), debounce 300ms để không
-  // gọi API dồn dập mỗi lần gõ phím.
   useEffect(() => {
     if (query.length <= 1) { setResults([]); return; }
     const timer = setTimeout(() => {
@@ -63,16 +73,18 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] bg-white/98 flex flex-col items-center pt-32 px-6">
-      <button onClick={onClose} className="absolute top-6 right-6 p-2 hover:bg-neutral-100 rounded-full"><X size={24} /></button>
-      <div className="w-full max-w-2xl">
+    <div className="fixed inset-0 z-[100] bg-white overflow-y-auto">
+      <button onClick={onClose} className="absolute top-6 left-6 p-2 hover:bg-neutral-100 rounded-full z-10"><X size={22} /></button>
+
+      <div className="max-w-3xl mx-auto pt-24 px-6 pb-16">
         <div className="relative">
-          <Search className="absolute left-0 top-1/2 -translate-y-1/2 text-neutral-400" size={20} />
           <input ref={inputRef} type="text" value={query} onChange={(e) => setQuery(e.target.value)}
             placeholder={t('placeholder')}
-            className="w-full pl-10 pr-4 py-4 text-2xl font-light border-b-2 border-neutral-900 bg-transparent outline-none placeholder:text-neutral-300" />
+            className="w-full pr-10 py-3 text-xl md:text-2xl font-light border-b border-neutral-900 bg-transparent outline-none placeholder:text-neutral-400" />
+          <Search className="absolute right-0 top-1/2 -translate-y-1/2 text-neutral-400" size={20} />
         </div>
-        {query.length > 1 && (
+
+        {query.length > 1 ? (
           <div className="mt-8">
             {loading ? (
               <div className="flex justify-center mt-12">
@@ -92,16 +104,40 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
               <p className="text-neutral-400 text-center mt-12">{t('noResults', { query })}</p>
             )}
           </div>
-        )}
-        {query.length <= 1 && (
-          <div className="mt-12">
-            <p className="text-xs tracking-widest uppercase text-neutral-400 mb-4">{t('popular')}</p>
-            <div className="flex flex-wrap gap-3">
-              {POPULAR_SEARCHES.map(tag => (
-                <button key={tag} onClick={() => setQuery(tag)} className="px-4 py-2 text-xs tracking-wider border border-neutral-200 hover:border-neutral-900 transition-colors">{tag}</button>
-              ))}
+        ) : (
+          <>
+            <div className="mt-10">
+              <p className="text-sm mb-4">{t('popular')}</p>
+              <div className="flex flex-wrap gap-2">
+                {popularTags.map(tag => (
+                  <button key={tag} onClick={() => setQuery(tag)}
+                    className="px-4 py-2 text-xs bg-neutral-50 hover:bg-neutral-100 transition-colors rounded-sm">
+                    {tag}
+                  </button>
+                ))}
+              </div>
             </div>
-          </div>
+
+            {spotlight.length > 0 && (
+              <div className="mt-12">
+                <p className="text-sm mb-4">{t('spotlight')}</p>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  {spotlight.map((product) => (
+                    <Link key={product.id} href={`/${locale}/product/${product.slug}`} onClick={onClose} className="group">
+                      <div className="relative aspect-square bg-neutral-50 overflow-hidden mb-2">
+                        {product.images[0] ? (
+                          <Image src={product.images[0]} alt={product.name} fill className="object-cover transition-transform duration-500 group-hover:scale-105" />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-neutral-300 text-2xl">✦</div>
+                        )}
+                      </div>
+                      <p className="text-xs text-center text-neutral-700 truncate">{product.name}</p>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>

@@ -9,7 +9,9 @@ import { Search, User, ShoppingBag, Menu, X } from "lucide-react";
 import SearchOverlay from "./SearchOverlay";
 import MiniCart from "./MiniCart";
 import MegaMenu from "./MegaMenu";
-import LanguageSwitcher from "./LanguageSwitcher";
+// Tạm ẩn LanguageSwitcher (xem comment trong JSX bên dưới) — bỏ comment dòng
+// này cùng lúc với dòng <LanguageSwitcher /> khi cần bật lại.
+// import LanguageSwitcher from "./LanguageSwitcher";
 
 export default function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -63,13 +65,15 @@ export default function Header() {
         </div>
         <div className="max-w-[1400px] mx-auto px-6">
           <div className="flex items-center justify-between h-16 md:h-20">
-            <button className="md:hidden p-2" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
-              {isMobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
-            </button>
-            <Link href={`/${locale}`} className="absolute left-1/2 -translate-x-1/2 md:static md:translate-x-0">
-              <h1 className="text-xl md:text-2xl font-light tracking-[0.3em] uppercase">Lumière</h1>
+            <div className="flex items-center flex-1 md:flex-none">
+              <button className="md:hidden p-2 -ml-2" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
+                {isMobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
+              </button>
+            </div>
+            <Link href={`/${locale}`} className="flex-shrink-0">
+              <h1 className="text-lg md:text-2xl font-light tracking-[0.15em] md:tracking-[0.3em] uppercase whitespace-nowrap">Lumière</h1>
             </Link>
-            <nav className="hidden md:flex items-center gap-8">
+            <nav className="hidden md:flex flex-1 justify-center items-center gap-8">
               {navItems.map((item) => (
                 <div key={item.label} className="relative"
                   onMouseEnter={() => item.children && setActiveMegaMenu(item.label)}
@@ -80,8 +84,10 @@ export default function Header() {
                 </div>
               ))}
             </nav>
-            <div className="flex items-center gap-3">
-              <LanguageSwitcher />
+            <div className="flex items-center justify-end flex-1 md:flex-none gap-0.5 md:gap-3">
+              {/* Tạm ẩn theo yêu cầu (gây chồng lấn với logo trên mobile) — bỏ
+                  comment dòng dưới để bật lại khi cần. */}
+              {/* <LanguageSwitcher /> */}
               <button onClick={() => setIsSearchOpen(true)} className="p-2 hover:bg-neutral-100 rounded-full transition-colors" aria-label={t("search")}>
                 <Search size={18} strokeWidth={1.5} />
               </button>

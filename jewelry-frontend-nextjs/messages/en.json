@@ -83,7 +83,8 @@
     "placeholder": "Search products, collections...",
     "results": "Results",
     "noResults": "No results found for \"{query}\"",
-    "popular": "Popular Searches"
+    "popular": "Popular",
+    "spotlight": "Spotlight"
   },
   "checkout": {
     "information": "Information",

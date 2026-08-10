@@ -83,7 +83,8 @@
     "placeholder": "Tìm sản phẩm, bộ sưu tập...",
     "results": "kết quả",
     "noResults": "Không tìm thấy kết quả cho \"{query}\"",
-    "popular": "Tìm kiếm phổ biến"
+    "popular": "Phổ biến",
+    "spotlight": "Nổi bật"
   },
   "checkout": {
     "information": "Thông tin",
