@@ -215,7 +215,10 @@
     "viewAll": "Xem tất cả",
     "productNotFound": "Không tìm thấy sản phẩm",
     "productNotFoundDesc": "Sản phẩm này có thể đã bị gỡ hoặc không còn khả dụng.",
-    "browseJewelry": "Xem trang sức"
+    "browseJewelry": "Xem trang sức",
+    "filters": "Bộ lọc",
+    "clearFilters": "Xoá lọc",
+    "showResults": "Xem kết quả"
   },
   "account": {
     "title": "Tài khoản của tôi",

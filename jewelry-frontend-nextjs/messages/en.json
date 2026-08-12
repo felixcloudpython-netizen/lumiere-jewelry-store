@@ -215,7 +215,10 @@
     "viewAll": "View All",
     "productNotFound": "Product not found",
     "productNotFoundDesc": "This product may have been removed or is no longer available.",
-    "browseJewelry": "Browse Jewelry"
+    "browseJewelry": "Browse Jewelry",
+    "filters": "Filters",
+    "clearFilters": "Clear",
+    "showResults": "Show Results"
   },
   "account": {
     "title": "My Account",
