@@ -81,6 +81,8 @@ const slugSchema = z.string().trim().min(1)
 export const createCategorySchema = z.object({
   name: z.string().trim().min(1),
   slug: slugSchema,
+  description: z.string().trim().optional(),
+  image: z.string().trim().optional(),
   parentId: z.string().cuid().optional(),
 });
 export const updateCategorySchema = createCategorySchema.partial();

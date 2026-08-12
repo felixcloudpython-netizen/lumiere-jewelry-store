@@ -8,7 +8,7 @@
     "search": "Search",
     "account": "Account",
     "cart": "Shopping Bag",
-    "shippingBanner": "Complimentary shipping on orders over 2,000,000\u20ab",
+    "promoBanner": "Helixa Diadum: Where sculptural art meets style. Discover the collection that redefined modern jewelry.",
     "menu": {
       "rings": "Rings",
       "ringsDesc": "Diamond, gold & gemstone rings",
@@ -58,7 +58,7 @@
     "outOfStock": "Out of Stock",
     "metal": "Metal",
     "collection": "Collection",
-    "freeShipping": "Complimentary shipping on orders over 2,000,000\u20ab",
+    "freeShipping": "Complimentary shipping on orders over 2,000,000₫",
     "warranty": "Lifetime warranty on all craftsmanship",
     "returns": "30-day complimentary returns",
     "clickToZoom": "Click to Zoom",
@@ -233,7 +233,10 @@
     "benefit2": "Receive order confirmation emails",
     "createAccountButton": "Create an Account",
     "firstName": "First name",
-    "lastName": "Last name"
+    "lastName": "Last name",
+    "phone": "Mobile phone number",
+    "confirmPassword": "Confirm password",
+    "passwordMismatch": "Passwords do not match"
   },
   "chat": {
     "supportTitle": "Customer Support",

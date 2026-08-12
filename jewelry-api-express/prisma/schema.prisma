@@ -40,13 +40,18 @@ model Address {
 }
 
 model Category {
-  id       String     @id @default(cuid())
-  name     String     @unique
-  slug     String     @unique
-  parentId String?
-  parent   Category?  @relation("CategoryParent", fields: [parentId], references: [id])
-  children Category[] @relation("CategoryParent")
-  products Product[]
+  id          String     @id @default(cuid())
+  name        String     @unique
+  slug        String     @unique
+  // 2 field mới — dùng để hiện trong mega menu ở trang chủ (mục "Trang sức").
+  // Cả 2 đều optional: chưa điền thì mega menu tự hiện dạng dòng chữ như cũ,
+  // không bắt buộc phải có ảnh mới dùng được.
+  description String?
+  image       String?
+  parentId    String?
+  parent      Category?  @relation("CategoryParent", fields: [parentId], references: [id])
+  children    Category[] @relation("CategoryParent")
+  products    Product[]
 }
 
 model Collection {

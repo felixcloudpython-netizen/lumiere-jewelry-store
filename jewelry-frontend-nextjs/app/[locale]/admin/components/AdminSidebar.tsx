@@ -39,8 +39,10 @@ export default function AdminSidebar() {
             <Link
               key={item.href}
               href={item.href}
-              className={`flex items-center gap-3 px-4 py-3 rounded text-sm transition-colors ${
-                isActive ? "bg-white/10 text-white" : "text-neutral-400 hover:text-white hover:bg-white/5"
+              className={`flex items-center gap-3 px-4 py-3 rounded text-sm transition-all duration-200 ${
+                isActive
+                  ? "bg-white/10 text-white ring-1 ring-white/25 shadow-[0_0_12px_rgba(255,255,255,0.08)]"
+                  : "text-neutral-400 hover:text-white hover:bg-white/5 hover:ring-1 hover:ring-white/10"
               }`}
             >
               <Icon size={18} strokeWidth={1.5} />

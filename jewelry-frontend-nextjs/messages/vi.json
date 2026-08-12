@@ -8,7 +8,7 @@
     "search": "Tìm kiếm",
     "account": "Tài khoản",
     "cart": "Giỏ hàng",
-    "shippingBanner": "Miễn phí vận chuyển cho đơn hàng trên 2.000.000\u20ab",
+    "promoBanner": "Helixa Diadum: Nơi nghệ thuật điêu khắc giao thoa cùng phong cách. Khám phá bộ sưu tập đã định nghĩa lại trang sức hiện đại.",
     "menu": {
       "rings": "Nhẫn",
       "ringsDesc": "Nhẫn kim cương, vàng & đá quý",
@@ -58,7 +58,7 @@
     "outOfStock": "Hết hàng",
     "metal": "Chất liệu",
     "collection": "Bộ sưu tập",
-    "freeShipping": "Miễn phí vận chuyển cho đơn hàng trên 2.000.000\u20ab",
+    "freeShipping": "Miễn phí vận chuyển cho đơn hàng trên 2.000.000₫",
     "warranty": "Bảo hành trọn đời",
     "returns": "Đổi trả miễn phí trong 30 ngày",
     "clickToZoom": "Nhấn để phóng to",
@@ -233,7 +233,10 @@
     "benefit2": "Nhận email xác nhận đơn hàng",
     "createAccountButton": "Tạo tài khoản",
     "firstName": "Tên",
-    "lastName": "Họ"
+    "lastName": "Họ",
+    "phone": "Số điện thoại",
+    "confirmPassword": "Xác nhận mật khẩu",
+    "passwordMismatch": "Mật khẩu xác nhận không khớp"
   },
   "chat": {
     "supportTitle": "Hỗ trợ khách hàng",

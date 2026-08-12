@@ -10,6 +10,8 @@ interface Category {
   id: string;
   name: string;
   slug: string;
+  description: string | null;
+  image: string | null;
   parentId: string | null;
   _count: { products: number };
 }
@@ -94,16 +96,20 @@ function CategorySection({ categories, token, onChange }: { categories: Category
   const [name, setName] = useState("");
   const [slug, setSlug] = useState("");
   const [slugTouched, setSlugTouched] = useState(false);
+  const [description, setDescription] = useState("");
+  const [image, setImage] = useState("");
   const [parentId, setParentId] = useState("");
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const resetForm = () => {
-    setEditingId(null); setName(""); setSlug(""); setSlugTouched(false); setParentId(""); setError("");
+    setEditingId(null); setName(""); setSlug(""); setSlugTouched(false);
+    setDescription(""); setImage(""); setParentId(""); setError("");
   };
 
   const startEdit = (cat: Category) => {
-    setEditingId(cat.id); setName(cat.name); setSlug(cat.slug); setSlugTouched(true); setParentId(cat.parentId ?? ""); setError("");
+    setEditingId(cat.id); setName(cat.name); setSlug(cat.slug); setSlugTouched(true);
+    setDescription(cat.description ?? ""); setImage(cat.image ?? ""); setParentId(cat.parentId ?? ""); setError("");
   };
 
   const handleNameChange = (value: string) => {
@@ -116,7 +122,7 @@ function CategorySection({ categories, token, onChange }: { categories: Category
     if (!token) return;
     setError("");
     setIsSubmitting(true);
-    const body = { name, slug: slugify(slug), parentId: parentId || undefined };
+    const body = { name, slug: slugify(slug), description: description || undefined, image: image || undefined, parentId: parentId || undefined };
     try {
       if (editingId) {
         await apiFetch(`/api/products/categories/${editingId}`, { method: "PATCH", token, body });
@@ -190,6 +196,15 @@ function CategorySection({ categories, token, onChange }: { categories: Category
           <div>
             <label className={labelClass}>Slug</label>
             <input type="text" required value={slug} onChange={(e) => { setSlug(liveSlugify(e.target.value)); setSlugTouched(true); }} className={inputClass} placeholder="e.g. rings" />
+          </div>
+          <div>
+            <label className={labelClass}>Description (optional)</label>
+            <textarea value={description} onChange={(e) => setDescription(e.target.value)} className={`${inputClass} min-h-[70px] resize-y`} placeholder="Shown under the category name in the navigation menu" />
+          </div>
+          <div>
+            <label className={labelClass}>Image (optional)</label>
+            <p className="text-[11px] text-neutral-400 mb-2">Chưa có ảnh thì menu điều hướng vẫn hiện dạng dòng chữ như hiện tại.</p>
+            <ImageUploader maxFiles={1} existingImages={image ? [image] : []} onUpload={(urls) => setImage(urls[0] ?? "")} />
           </div>
           <div>
             <label className={labelClass}>Parent Category (optional)</label>

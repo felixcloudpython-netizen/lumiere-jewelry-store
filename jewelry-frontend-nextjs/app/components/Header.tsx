@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { useCartStore } from "@/lib/store/cartStore";
+import { apiFetch } from "@/lib/api";
 import { Search, User, ShoppingBag, Menu, X } from "lucide-react";
 import SearchOverlay from "./SearchOverlay";
 import MiniCart from "./MiniCart";
@@ -18,6 +19,35 @@ export default function Header() {
   const [activeMegaMenu, setActiveMegaMenu] = useState<string | null>(null);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isBannerVisible, setIsBannerVisible] = useState(true);
+
+  useEffect(() => {
+    // Nhớ trạng thái đã đóng banner qua các lần ghé thăm sau — không hiện lại
+    // phiền khách mỗi lần tải trang nếu họ đã bấm đóng rồi.
+    if (localStorage.getItem("promoBannerDismissed") === "true") {
+      setIsBannerVisible(false);
+    }
+  }, []);
+
+  const dismissBanner = () => {
+    setIsBannerVisible(false);
+    localStorage.setItem("promoBannerDismissed", "true");
+  };
+
+  // Mục "Trang sức" và "Bộ sưu tập" trong mega menu giờ lấy THẬT từ Category/
+  // Collection quản lý qua Admin → Categories (trước đây hardcode cứng 4 mục cố
+  // định, không khớp gì với dữ liệu admin thực sự tạo/sửa/xoá). "Cầu hôn" và
+  // "Quà tặng" không có model riêng tương ứng (đã thống nhất dùng filter
+  // category=rings / bestseller ở trang danh sách), nên vẫn giữ tĩnh như cũ.
+  interface MenuCategory { name: string; slug: string; description: string | null; image: string | null }
+  interface MenuCollection { name: string; slug: string; description: string | null; heroImage: string | null }
+  const [jewelryItems, setJewelryItems] = useState<MenuCategory[]>([]);
+  const [collectionItems, setCollectionItems] = useState<MenuCollection[]>([]);
+
+  useEffect(() => {
+    apiFetch<MenuCategory[]>("/api/products/categories").then(setJewelryItems).catch(() => setJewelryItems([]));
+    apiFetch<MenuCollection[]>("/api/products/collections").then(setCollectionItems).catch(() => setCollectionItems([]));
+  }, []);
 
   const pathname = usePathname();
   const locale = useLocale();
@@ -26,23 +56,17 @@ export default function Header() {
   const cartCount = totalItems();
 
   const navItems = [
-    { label: t("jewelry"), href: `/${locale}/jewelry`, children: [
-      { label: t("menu.rings"), href: `/${locale}/jewelry/rings`, description: t("menu.ringsDesc") },
-      { label: t("menu.necklaces"), href: `/${locale}/jewelry/necklaces`, description: t("menu.necklacesDesc") },
-      { label: t("menu.earrings"), href: `/${locale}/jewelry/earrings`, description: t("menu.earringsDesc") },
-      { label: t("menu.bracelets"), href: `/${locale}/jewelry/bracelets`, description: t("menu.braceletsDesc") },
-    ]},
+    { label: t("jewelry"), href: `/${locale}/jewelry`, children: jewelryItems.map((cat) => ({
+      label: cat.name, href: `/${locale}/jewelry/${cat.slug}`, description: cat.description, image: cat.image,
+    })) },
     { label: t("engagement"), href: `/${locale}/engagement`, children: [
       { label: t("menu.engagementRings"), href: `/${locale}/engagement/rings`, description: t("menu.engagementRingsDesc") },
       { label: t("menu.weddingBands"), href: `/${locale}/engagement/bands`, description: t("menu.weddingBandsDesc") },
       { label: t("menu.diamondGuide"), href: `/${locale}/engagement/guide`, description: t("menu.diamondGuideDesc") },
     ]},
-    { label: t("collections"), href: `/${locale}/collections`, children: [
-      { label: t("menu.aura"), href: `/${locale}/collections/aura`, description: t("menu.auraDesc") },
-      { label: t("menu.eternity"), href: `/${locale}/collections/eternity`, description: t("menu.eternityDesc") },
-      { label: t("menu.luna"), href: `/${locale}/collections/luna`, description: t("menu.lunaDesc") },
-      { label: t("menu.stellar"), href: `/${locale}/collections/stellar`, description: t("menu.stellarDesc") },
-    ]},
+    { label: t("collections"), href: `/${locale}/collections`, children: collectionItems.map((col) => ({
+      label: col.name, href: `/${locale}/collections/${col.slug}`, description: col.description, image: col.heroImage,
+    })) },
     { label: t("gifts"), href: `/${locale}/gifts` },
   ];
 
@@ -60,9 +84,15 @@ export default function Header() {
   return (
     <>
       <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled ? "bg-white/95 backdrop-blur-md shadow-sm" : "bg-white"}`}>
-        <div className="bg-neutral-900 text-white text-[11px] tracking-widest text-center py-2 uppercase">
-          {t("shippingBanner")}
-        </div>
+        {isBannerVisible && (
+          <div className="relative bg-neutral-900 text-white text-[11px] tracking-wide text-center py-2 px-10">
+            {t("promoBanner")}
+            <button onClick={dismissBanner} aria-label="Đóng thông báo"
+              className="absolute right-3 top-1/2 -translate-y-1/2 p-1 hover:opacity-70 transition-opacity">
+              <X size={14} />
+            </button>
+          </div>
+        )}
         <div className="max-w-[1400px] mx-auto px-6">
           <div className="flex items-center justify-between h-16 md:h-20">
             <div className="flex items-center flex-1 md:flex-none">
@@ -76,8 +106,7 @@ export default function Header() {
             <nav className="hidden md:flex flex-1 justify-center items-center gap-8">
               {navItems.map((item) => (
                 <div key={item.label} className="relative"
-                  onMouseEnter={() => item.children && setActiveMegaMenu(item.label)}
-                  onMouseLeave={() => setActiveMegaMenu(null)}>
+                  onMouseEnter={() => item.children && setActiveMegaMenu(item.label)}>
                   <Link href={item.href} className={`text-[11px] tracking-[0.15em] uppercase py-5 border-b-2 transition-colors ${pathname.startsWith(item.href) ? "border-neutral-900 text-neutral-900" : "border-transparent text-neutral-600 hover:text-neutral-900"}`}>
                     {item.label}
                   </Link>
@@ -103,7 +132,12 @@ export default function Header() {
             </div>
           </div>
         </div>
-        <MegaMenu isOpen={!!activeMegaMenu} items={navItems.find(i => i.label === activeMegaMenu)?.children || []} onClose={() => setActiveMegaMenu(null)} />
+        {/* Bọc chung cả thanh nav lẫn MegaMenu trong 1 vùng onMouseLeave duy
+            nhất — di chuột từ chữ menu xuống panel bên dưới giờ không còn
+            "thoát" khỏi vùng hover giữa chừng nữa. */}
+        <div onMouseLeave={() => setActiveMegaMenu(null)}>
+          <MegaMenu isOpen={!!activeMegaMenu} items={navItems.find(i => i.label === activeMegaMenu)?.children || []} onClose={() => setActiveMegaMenu(null)} />
+        </div>
       </header>
 
       {isMobileMenuOpen && (
