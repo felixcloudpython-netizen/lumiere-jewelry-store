@@ -13,18 +13,18 @@ router.get('/rooms', authenticate, async (req, res) => {
     // Admin sees all rooms with unread counts
     const rooms = await prisma.$queryRaw`
       SELECT 
-        m.room_id as "roomId",
+        m."roomId" as "roomId",
         u.id as "userId",
         u.email,
-        u.first_name as "firstName",
-        u.last_name as "lastName",
-        COUNT(CASE WHEN m.read = false AND m.is_admin = false THEN 1 END)::int as "unreadCount",
-        MAX(m.created_at) as "lastMessageAt"
+        u."firstName" as "firstName",
+        u."lastName" as "lastName",
+        COUNT(CASE WHEN m.read = false AND m."isAdmin" = false THEN 1 END)::int as "unreadCount",
+        MAX(m."createdAt") as "lastMessageAt"
       FROM "Message" m
-      JOIN "User" u ON m.sender_id = u.id
-      WHERE m.is_admin = false
-      GROUP BY m.room_id, u.id, u.email, u.first_name, u.last_name
-      ORDER BY MAX(m.created_at) DESC
+      JOIN "User" u ON m."senderId" = u.id
+      WHERE m."isAdmin" = false
+      GROUP BY m."roomId", u.id, u.email, u."firstName", u."lastName"
+      ORDER BY MAX(m."createdAt") DESC
     `;
     res.json(rooms);
   } else {

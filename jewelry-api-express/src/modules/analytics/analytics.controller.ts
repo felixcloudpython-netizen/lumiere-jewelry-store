@@ -50,19 +50,22 @@ export const getDashboardStats = async (_req: AuthRequest, res: Response) => {
       take: 5,
     }),
     // Sales by day (last 30 days)
+    // Tên cột phải đặt trong ngoặc kép và đúng camelCase — Postgres tự động hạ
+    // chữ thường (createdAt -> createdat) nếu thiếu ngoặc kép, gây lỗi "column
+    // does not exist". Schema không dùng @map nên tên cột SQL = tên field.
     prisma.$queryRaw`
-      SELECT DATE(created_at) as date, SUM(total) as revenue, COUNT(*) as orders
+      SELECT DATE("createdAt") as date, SUM(total) as revenue, COUNT(*) as orders
       FROM "Order"
-      WHERE created_at >= ${thirtyDaysAgo} AND payment_status = 'PAID'
-      GROUP BY DATE(created_at)
+      WHERE "createdAt" >= ${thirtyDaysAgo} AND "paymentStatus" = 'PAID'
+      GROUP BY DATE("createdAt")
       ORDER BY date ASC
     `,
     // Sales by category
     prisma.$queryRaw`
       SELECT c.name as category, SUM(oi.price * oi.quantity) as revenue, SUM(oi.quantity) as quantity
       FROM "OrderItem" oi
-      JOIN "Product" p ON oi.product_id = p.id
-      JOIN "Category" c ON p.category_id = c.id
+      JOIN "Product" p ON oi."productId" = p.id
+      JOIN "Category" c ON p."categoryId" = c.id
       GROUP BY c.name
       ORDER BY revenue DESC
     `,
