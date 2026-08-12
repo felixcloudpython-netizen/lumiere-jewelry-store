@@ -41,12 +41,19 @@ export default function Header() {
   // category=rings / bestseller ở trang danh sách), nên vẫn giữ tĩnh như cũ.
   interface MenuCategory { name: string; slug: string; description: string | null; image: string | null }
   interface MenuCollection { name: string; slug: string; description: string | null; heroImage: string | null }
+  interface MenuProduct { id: string; name: string; slug: string; price: number; images: string[] }
   const [jewelryItems, setJewelryItems] = useState<MenuCategory[]>([]);
   const [collectionItems, setCollectionItems] = useState<MenuCollection[]>([]);
+  const [featuredProducts, setFeaturedProducts] = useState<MenuProduct[]>([]);
 
   useEffect(() => {
     apiFetch<MenuCategory[]>("/api/products/categories").then(setJewelryItems).catch(() => setJewelryItems([]));
     apiFetch<MenuCollection[]>("/api/products/collections").then(setCollectionItems).catch(() => setCollectionItems([]));
+    // Cột "Nổi bật" — dùng chung 1 danh sách sản phẩm bestseller thật cho cả 2
+    // mega menu (Trang sức + Bộ sưu tập), giống kiểu cột "Featured" của Tiffany.
+    // Không tự bịa ảnh/sản phẩm — nếu chưa có sản phẩm nào tick "Bestseller" ở
+    // Admin, cột này tự ẩn (MegaMenu.tsx tự lọc bỏ cột rỗng).
+    apiFetch<{ data: MenuProduct[] }>("/api/products?bestseller=true&limit=3").then((r) => setFeaturedProducts(r.data)).catch(() => setFeaturedProducts([]));
   }, []);
 
   const pathname = usePathname();
@@ -55,19 +62,38 @@ export default function Header() {
   const { toggleCart, totalItems } = useCartStore();
   const cartCount = totalItems();
 
-  const navItems = [
-    { label: t("jewelry"), href: `/${locale}/jewelry`, children: jewelryItems.map((cat) => ({
-      label: cat.name, href: `/${locale}/jewelry/${cat.slug}`, description: cat.description, image: cat.image,
-    })) },
-    { label: t("engagement"), href: `/${locale}/engagement`, children: [
-      { label: t("menu.engagementRings"), href: `/${locale}/engagement/rings`, description: t("menu.engagementRingsDesc") },
-      { label: t("menu.weddingBands"), href: `/${locale}/engagement/bands`, description: t("menu.weddingBandsDesc") },
-      { label: t("menu.diamondGuide"), href: `/${locale}/engagement/guide`, description: t("menu.diamondGuideDesc") },
+  interface MegaMenuItem { label: string; href: string; description?: string | null; image?: string | null; price?: number }
+  interface MegaMenuColumnData { title?: string; variant?: 'products'; items: MegaMenuItem[] }
+
+  const featuredColumn: MegaMenuColumnData = {
+    title: t("menu.featured"),
+    variant: "products",
+    items: featuredProducts.map((p) => ({
+      label: p.name, href: `/${locale}/product/${p.slug}`, image: p.images[0], price: p.price,
+    })),
+  };
+
+  const navItems: { label: string; href: string; columns: MegaMenuColumnData[] }[] = [
+    { label: t("jewelry"), href: `/${locale}/jewelry`, columns: [
+      { title: t("menu.categories"), items: jewelryItems.map((cat) => ({
+        label: cat.name, href: `/${locale}/jewelry/${cat.slug}`, description: cat.description, image: cat.image,
+      })) },
+      featuredColumn,
     ]},
-    { label: t("collections"), href: `/${locale}/collections`, children: collectionItems.map((col) => ({
-      label: col.name, href: `/${locale}/collections/${col.slug}`, description: col.description, image: col.heroImage,
-    })) },
-    { label: t("gifts"), href: `/${locale}/gifts` },
+    { label: t("engagement"), href: `/${locale}/engagement`, columns: [
+      { items: [
+        { label: t("menu.engagementRings"), href: `/${locale}/engagement/rings`, description: t("menu.engagementRingsDesc") },
+        { label: t("menu.weddingBands"), href: `/${locale}/engagement/bands`, description: t("menu.weddingBandsDesc") },
+        { label: t("menu.diamondGuide"), href: `/${locale}/engagement/guide`, description: t("menu.diamondGuideDesc") },
+      ]},
+    ]},
+    { label: t("collections"), href: `/${locale}/collections`, columns: [
+      { title: t("menu.collectionsTitle"), items: collectionItems.map((col) => ({
+        label: col.name, href: `/${locale}/collections/${col.slug}`, description: col.description, image: col.heroImage,
+      })) },
+      featuredColumn,
+    ]},
+    { label: t("gifts"), href: `/${locale}/gifts`, columns: [] },
   ];
 
   useEffect(() => {
@@ -106,7 +132,7 @@ export default function Header() {
             <nav className="hidden md:flex flex-1 justify-center items-center gap-8">
               {navItems.map((item) => (
                 <div key={item.label} className="relative"
-                  onMouseEnter={() => item.children && setActiveMegaMenu(item.label)}>
+                  onMouseEnter={() => item.columns.length > 0 && setActiveMegaMenu(item.label)}>
                   <Link href={item.href} className={`text-[11px] tracking-[0.15em] uppercase py-5 border-b-2 transition-colors ${pathname.startsWith(item.href) ? "border-neutral-900 text-neutral-900" : "border-transparent text-neutral-600 hover:text-neutral-900"}`}>
                     {item.label}
                   </Link>
@@ -136,7 +162,7 @@ export default function Header() {
             nhất — di chuột từ chữ menu xuống panel bên dưới giờ không còn
             "thoát" khỏi vùng hover giữa chừng nữa. */}
         <div onMouseLeave={() => setActiveMegaMenu(null)}>
-          <MegaMenu isOpen={!!activeMegaMenu} items={navItems.find(i => i.label === activeMegaMenu)?.children || []} onClose={() => setActiveMegaMenu(null)} />
+          <MegaMenu isOpen={!!activeMegaMenu} columns={navItems.find(i => i.label === activeMegaMenu)?.columns || []} onClose={() => setActiveMegaMenu(null)} />
         </div>
       </header>
 
@@ -146,9 +172,9 @@ export default function Header() {
             {navItems.map((item) => (
               <div key={item.label}>
                 <Link href={item.href} className="text-lg tracking-widest uppercase" onClick={() => setIsMobileMenuOpen(false)}>{item.label}</Link>
-                {item.children && (
+                {item.columns.some(c => c.items.length > 0) && (
                   <div className="ml-4 mt-3 flex flex-col gap-3">
-                    {item.children.map(child => (
+                    {item.columns.flatMap(c => c.items).map(child => (
                       <Link key={child.label} href={child.href} className="text-sm text-neutral-500" onClick={() => setIsMobileMenuOpen(false)}>{child.label}</Link>
                     ))}
                   </div>

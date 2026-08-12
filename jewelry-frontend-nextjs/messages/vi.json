@@ -31,7 +31,10 @@
       "luna": "Luna",
       "lunaDesc": "Ngọc trai & bạc",
       "stellar": "Stellar",
-      "stellarDesc": "Thiết kế điêu khắc táo bạo"
+      "stellarDesc": "Thiết kế điêu khắc táo bạo",
+      "categories": "Danh mục",
+      "collectionsTitle": "Bộ sưu tập",
+      "featured": "Nổi bật"
     }
   },
   "hero": {

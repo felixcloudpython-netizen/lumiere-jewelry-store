@@ -31,7 +31,10 @@
       "luna": "Luna",
       "lunaDesc": "Pearls & silver",
       "stellar": "Stellar",
-      "stellarDesc": "Bold sculptural designs"
+      "stellarDesc": "Bold sculptural designs",
+      "categories": "Categories",
+      "collectionsTitle": "Collections",
+      "featured": "Featured"
     }
   },
   "hero": {
