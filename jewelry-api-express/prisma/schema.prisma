@@ -64,6 +64,45 @@ model Collection {
   products    Product[]
 }
 
+// Hệ thống phân loại đa chiều (multi-tag) — KHÁC với Category (Category là cây
+// phân cấp cha-con, 1 sản phẩm chỉ thuộc đúng 1 nhánh). Ở đây, TagGroup là các
+// "trục" phân loại độc lập song song do admin tự đặt tên tuỳ ý (ví dụ: Phân
+// loại, Dòng sản phẩm, Collaboration, Dịp đặc biệt...), mỗi trục chứa nhiều Tag
+// (giá trị). 1 sản phẩm có thể gắn nhiều Tag thuộc nhiều TagGroup khác nhau
+// CÙNG LÚC — không giới hạn, không loại trừ nhau.
+model TagGroup {
+  id    String @id @default(cuid())
+  name  String @unique
+  slug  String @unique
+  order Int    @default(0) // thứ tự hiển thị các nhóm trong mega menu/bộ lọc
+  tags  Tag[]
+}
+
+model Tag {
+  id          String       @id @default(cuid())
+  name        String
+  slug        String
+  tagGroupId  String
+  tagGroup    TagGroup     @relation(fields: [tagGroupId], references: [id], onDelete: Cascade)
+  productTags ProductTag[]
+
+  // slug chỉ cần duy nhất TRONG PHẠM VI 1 nhóm (khác nhóm có thể trùng slug,
+  // vd nhóm "Phân loại" có "vong-tay" và nhóm "Trang sức đôi" cũng có thể có
+  // slug tương tự mà không xung đột).
+  @@unique([tagGroupId, slug])
+}
+
+// Bảng nối tường minh (không dùng quan hệ nhiều-nhiều ẩn của Prisma) — dễ kiểm
+// soát, dễ viết migration tay chính xác hơn.
+model ProductTag {
+  productId String
+  tagId     String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  tag       Tag     @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([productId, tagId])
+}
+
 model Product {
   id            String         @id @default(cuid())
   slug          String         @unique
@@ -76,6 +115,7 @@ model Product {
   category      Category       @relation(fields: [categoryId], references: [id])
   collectionId  String?
   collection    Collection?    @relation(fields: [collectionId], references: [id])
+  tags          ProductTag[]
   metal         Metal
   stones        String[]
   sizes         Int[]

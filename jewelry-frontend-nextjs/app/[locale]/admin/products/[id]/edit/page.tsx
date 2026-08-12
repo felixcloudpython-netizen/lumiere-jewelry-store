@@ -12,6 +12,7 @@ interface ProductDetail extends ProductFormInitialData {
   id: string;
   category: { id: string };
   collection: { id: string } | null;
+  tags: { tag: { id: string } }[];
 }
 
 export default function EditProductPage() {
@@ -58,6 +59,7 @@ export default function EditProductPage() {
         ...product,
         categoryId: product.category.id,
         collectionId: product.collection?.id ?? null,
+        tagIds: product.tags.map((t) => t.tag.id),
       }}
     />
   );

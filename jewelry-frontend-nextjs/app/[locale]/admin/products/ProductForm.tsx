@@ -10,6 +10,7 @@ import { useAuthStore } from "@/lib/store/authStore";
 
 interface Category { id: string; name: string; slug: string; }
 interface Collection { id: string; name: string; slug: string; }
+interface TagGroup { id: string; name: string; slug: string; tags: { id: string; name: string; slug: string }[] }
 
 export interface ProductFormInitialData {
   name: string;
@@ -20,6 +21,7 @@ export interface ProductFormInitialData {
   sku: string;
   categoryId: string;
   collectionId?: string | null;
+  tagIds?: string[];
   metal: string;
   inventory: number;
   inStock: boolean;
@@ -44,6 +46,8 @@ export default function ProductForm({ mode, productId, initialData }: ProductFor
 
   const [categories, setCategories] = useState<Category[]>([]);
   const [collections, setCollections] = useState<Collection[]>([]);
+  const [tagGroups, setTagGroups] = useState<TagGroup[]>([]);
+  const [selectedTagIds, setSelectedTagIds] = useState<Set<string>>(new Set(initialData?.tagIds ?? []));
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [images, setImages] = useState<string[]>(initialData?.images ?? []);
@@ -75,8 +79,17 @@ export default function ProductForm({ mode, productId, initialData }: ProductFor
       }
     }).catch(() => {});
     apiFetch<Collection[]>("/api/products/collections").then(setCollections).catch(() => {});
+    apiFetch<TagGroup[]>("/api/products/tag-groups").then(setTagGroups).catch(() => {});
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const toggleTag = (tagId: string) => {
+    setSelectedTagIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(tagId)) next.delete(tagId); else next.add(tagId);
+      return next;
+    });
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -93,6 +106,7 @@ export default function ProductForm({ mode, productId, initialData }: ProductFor
         sku: formData.sku,
         categoryId: formData.categoryId,
         collectionId: formData.collectionId || undefined,
+        tagIds: Array.from(selectedTagIds),
         metal: formData.metal,
         inventory: parseInt(formData.inventory, 10) || 0,
         inStock: formData.inStock,
@@ -207,6 +221,37 @@ export default function ProductForm({ mode, productId, initialData }: ProductFor
             <input type="text" value={formData.sizes} onChange={e => setFormData({...formData, sizes: e.target.value})} className={inputClass} placeholder="5, 5.5, 6, 6.5" />
           </div>
         </div>
+
+        {tagGroups.length > 0 && (
+          <div>
+            <label className={labelClass}>Tags</label>
+            <p className="text-[11px] text-neutral-400 mb-3 normal-case tracking-normal">
+              Optional — a product can carry multiple tags across multiple groups at once. Manage groups under Admin → Tags.
+            </p>
+            <div className="space-y-4 border border-neutral-200 p-4">
+              {tagGroups.map((group) => (
+                <div key={group.id}>
+                  <p className="text-[11px] tracking-[0.15em] uppercase text-neutral-400 mb-2">{group.name}</p>
+                  {group.tags.length === 0 ? (
+                    <p className="text-xs text-neutral-300">No tags in this group yet.</p>
+                  ) : (
+                    <div className="flex flex-wrap gap-2">
+                      {group.tags.map((tag) => {
+                        const checked = selectedTagIds.has(tag.id);
+                        return (
+                          <button key={tag.id} type="button" onClick={() => toggleTag(tag.id)}
+                            className={`px-3 py-1.5 text-xs border transition-colors ${checked ? "bg-neutral-900 text-white border-neutral-900" : "bg-white text-neutral-600 border-neutral-200 hover:border-neutral-400"}`}>
+                            {tag.name}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         <div className="flex items-center gap-8">
           <label className="flex items-center gap-2 text-sm cursor-pointer">

@@ -203,7 +203,7 @@ function CategorySection({ categories, token, onChange }: { categories: Category
           </div>
           <div>
             <label className={labelClass}>Image (optional)</label>
-            <p className="text-[11px] text-neutral-400 mb-2">Chưa có ảnh thì menu điều hướng vẫn hiện dạng dòng chữ như hiện tại.</p>
+            <p className="text-[11px] text-neutral-400 mb-2">Falls back to a text-only row in the navigation menu if no image is set.</p>
             <ImageUploader maxFiles={1} existingImages={image ? [image] : []} onUpload={(urls) => setImage(urls[0] ?? "")} />
           </div>
           <div>

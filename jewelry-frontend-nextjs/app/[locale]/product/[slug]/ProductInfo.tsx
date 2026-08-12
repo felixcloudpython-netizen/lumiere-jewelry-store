@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useTranslations, useLocale } from 'next-intl';
+import Link from 'next/link';
 import { Product } from '@/types';
 import { useCartStore } from '@/lib/store/cartStore';
 import { formatVND } from '@/lib/currency';
@@ -47,9 +48,9 @@ export default function ProductInfo({ product }: ProductInfoProps) {
   return (
     <div className="lg:pt-8">
       <nav className="text-[11px] tracking-wider text-neutral-500 mb-4">
-        <span className="hover:text-neutral-900 cursor-pointer">{tNav('home')}</span>
+        <Link href={`/${locale}`} className="hover:text-neutral-900">{tNav('home')}</Link>
         <span className="mx-2">/</span>
-        <span className="hover:text-neutral-900 cursor-pointer capitalize">{product.category.name}</span>
+        <Link href={`/${locale}/jewelry/${product.category.slug}`} className="hover:text-neutral-900 capitalize">{product.category.name}</Link>
         <span className="mx-2">/</span>
         <span className="text-neutral-900">{product.name}</span>
       </nav>
