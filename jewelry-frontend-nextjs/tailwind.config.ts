@@ -10,6 +10,7 @@ const config: Config = {
     extend: {
       fontFamily: {
         sans: ['var(--font-inter)', 'system-ui', 'sans-serif'],
+        'serif-display': ['var(--font-libre-baskerville)', 'Georgia', 'serif'],
       },
     },
   },

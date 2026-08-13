@@ -41,13 +41,13 @@ export default function MegaMenu({ isOpen, columns, onClose }: MegaMenuProps) {
       <div className="max-w-[1400px] mx-auto px-6 py-10">
         <div className="flex gap-12">
           {visibleColumns.map((col, idx) => (
-            <div key={col.title ?? idx} className={col.variant === 'products' ? 'flex-[1.3]' : 'flex-1'}>
+            <div key={col.title ?? idx} className={col.variant === 'products' ? 'flex-1' : 'flex-[2]'}>
               {col.title && (
-                <p className="text-[11px] tracking-[0.15em] uppercase text-neutral-400 mb-4">{col.title}</p>
+                <p className="text-[13px] tracking-[0.15em] uppercase text-neutral-400 mb-4">{col.title}</p>
               )}
-              <div className={col.variant === 'products' ? 'grid grid-cols-3 gap-4' : 'space-y-5'}>
+              <div className={col.variant === 'products' ? 'grid grid-cols-3 gap-4' : 'flex flex-wrap gap-3'}>
                 {col.items.map((item) => (
-                  <Link key={item.label} href={item.href} className="group block" onClick={onClose}>
+                  <Link key={item.label} href={item.href} className={`group block ${col.variant !== 'products' ? 'border border-neutral-200 px-4 py-3 hover:border-neutral-900 transition-colors max-w-[220px]' : ''}`} onClick={onClose}>
                     {col.variant === 'products' ? (
                       <>
                         <div className="relative aspect-square bg-neutral-50 overflow-hidden mb-2">
@@ -62,15 +62,15 @@ export default function MegaMenu({ isOpen, columns, onClose }: MegaMenuProps) {
                       </>
                     ) : item.image ? (
                       <>
-                        <div className="relative aspect-square bg-neutral-50 overflow-hidden mb-3">
-                          <Image src={item.image} alt={item.label} fill className="object-cover transition-transform duration-500 group-hover:scale-105" />
+                        <div className="relative w-10 h-10 bg-neutral-50 overflow-hidden mb-2 float-left mr-3">
+                          <Image src={item.image} alt={item.label} fill className="object-cover" />
                         </div>
-                        <h3 className="text-[10px] font-medium tracking-wider group-hover:underline underline-offset-4">{item.label}</h3>
+                        <h3 className="font-serif-display text-[13px] group-hover:underline underline-offset-4">{item.label}</h3>
                       </>
                     ) : (
                       <>
-                        <h3 className="text-[10px] font-medium tracking-wider mb-1 group-hover:underline underline-offset-4">{item.label}</h3>
-                        {item.description && <p className="text-xs text-neutral-500 leading-relaxed">{item.description}</p>}
+                        <h3 className="font-serif-display text-[13px] group-hover:underline underline-offset-4">{item.label}</h3>
+                        {item.description && <p className="text-[11px] text-neutral-500 leading-relaxed mt-0.5">{item.description}</p>}
                       </>
                     )}
                   </Link>
