@@ -38,7 +38,7 @@ export default function MegaMenu({ isOpen, columns, onClose }: MegaMenuProps) {
 
   return (
     <div
-      className={`absolute left-0 right-0 bg-white border-b border-neutral-200 shadow-lg overflow-hidden transition-[max-height,opacity] duration-300 ease-out ${
+      className={`absolute left-0 right-0 bg-white border-b border-neutral-200 shadow-lg overflow-hidden transition-all duration-300 ease-out ${
         shouldShow ? "max-h-[600px] opacity-100" : "max-h-0 opacity-0 pointer-events-none"
       }`}
     >
