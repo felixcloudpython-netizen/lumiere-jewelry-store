@@ -27,9 +27,9 @@ export default function HomePage() {
 
   return (
     <main>
-      <section className="relative h-[600px] flex items-center justify-center text-center bg-gradient-to-br from-slate-100 to-slate-200">
+      <section className="relative h-[420px] sm:h-[480px] md:h-[600px] flex items-center justify-center text-center bg-gradient-to-br from-slate-100 to-slate-200">
         <div className="relative z-10 px-6">
-          <h1 className="text-4xl md:text-6xl font-light tracking-[0.2em] uppercase mb-6">{t('hero.title')}</h1>
+          <h1 className="text-3xl sm:text-4xl md:text-6xl font-light tracking-[0.15em] md:tracking-[0.2em] uppercase mb-6">{t('hero.title')}</h1>
           <p className="text-neutral-600 mx-auto mb-10 leading-relaxed whitespace-nowrap text-[11px] sm:text-sm md:text-base">{t('hero.subtitle')}</p>
           <Link href={`/${locale}/jewelry`} className="inline-block px-10 py-4 bg-neutral-900 text-white text-xs tracking-[0.2em] uppercase hover:bg-neutral-800 transition-colors">
             {t('hero.cta')}
