@@ -41,19 +41,12 @@ export default function Header() {
   // category=rings / bestseller ở trang danh sách), nên vẫn giữ tĩnh như cũ.
   interface MenuCategory { name: string; slug: string; description: string | null; image: string | null }
   interface MenuCollection { name: string; slug: string; description: string | null; heroImage: string | null }
-  interface MenuProduct { id: string; name: string; slug: string; price: number; images: string[] }
   const [jewelryItems, setJewelryItems] = useState<MenuCategory[]>([]);
   const [collectionItems, setCollectionItems] = useState<MenuCollection[]>([]);
-  const [featuredProducts, setFeaturedProducts] = useState<MenuProduct[]>([]);
 
   useEffect(() => {
     apiFetch<MenuCategory[]>("/api/products/categories").then(setJewelryItems).catch(() => setJewelryItems([]));
     apiFetch<MenuCollection[]>("/api/products/collections").then(setCollectionItems).catch(() => setCollectionItems([]));
-    // Cột "Nổi bật" — dùng chung 1 danh sách sản phẩm bestseller thật cho cả 2
-    // mega menu (Trang sức + Bộ sưu tập), giống kiểu cột "Featured" của Tiffany.
-    // Không tự bịa ảnh/sản phẩm — nếu chưa có sản phẩm nào tick "Bestseller" ở
-    // Admin, cột này tự ẩn (MegaMenu.tsx tự lọc bỏ cột rỗng).
-    apiFetch<{ data: MenuProduct[] }>("/api/products?bestseller=true&limit=3").then((r) => setFeaturedProducts(r.data)).catch(() => setFeaturedProducts([]));
   }, []);
 
   const pathname = usePathname();
@@ -65,20 +58,11 @@ export default function Header() {
   interface MegaMenuItem { label: string; href: string; description?: string | null; image?: string | null; price?: number }
   interface MegaMenuColumnData { title?: string; variant?: 'products'; items: MegaMenuItem[] }
 
-  const featuredColumn: MegaMenuColumnData = {
-    title: t("menu.featured"),
-    variant: "products",
-    items: featuredProducts.map((p) => ({
-      label: p.name, href: `/${locale}/product/${p.slug}`, image: p.images[0], price: p.price,
-    })),
-  };
-
   const navItems: { label: string; href: string; columns: MegaMenuColumnData[] }[] = [
     { label: t("jewelry"), href: `/${locale}/jewelry`, columns: [
       { items: jewelryItems.map((cat) => ({
         label: cat.name, href: `/${locale}/jewelry/${cat.slug}`, description: cat.description, image: cat.image,
       })) },
-      featuredColumn,
     ]},
     { label: t("engagement"), href: `/${locale}/engagement`, columns: [
       { items: [
@@ -88,10 +72,9 @@ export default function Header() {
       ]},
     ]},
     { label: t("collections"), href: `/${locale}/collections`, columns: [
-      { title: t("menu.collectionsTitle"), items: collectionItems.map((col) => ({
+      { items: collectionItems.map((col) => ({
         label: col.name, href: `/${locale}/collections/${col.slug}`, description: col.description, image: col.heroImage,
       })) },
-      featuredColumn,
     ]},
     { label: t("gifts"), href: `/${locale}/gifts`, columns: [] },
   ];
