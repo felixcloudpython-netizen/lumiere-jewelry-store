@@ -65,11 +65,11 @@ export default function MegaMenu({ isOpen, columns, onClose }: MegaMenuProps) {
                         <div className="relative aspect-square bg-neutral-50 overflow-hidden mb-3">
                           <Image src={item.image} alt={item.label} fill className="object-cover transition-transform duration-500 group-hover:scale-105" />
                         </div>
-                        <h3 className="text-sm font-medium tracking-wider uppercase group-hover:underline underline-offset-4">{item.label}</h3>
+                        <h3 className="text-[10px] font-medium tracking-wider group-hover:underline underline-offset-4">{item.label}</h3>
                       </>
                     ) : (
                       <>
-                        <h3 className="text-sm font-medium tracking-wider uppercase mb-1 group-hover:underline underline-offset-4">{item.label}</h3>
+                        <h3 className="text-[10px] font-medium tracking-wider mb-1 group-hover:underline underline-offset-4">{item.label}</h3>
                         {item.description && <p className="text-xs text-neutral-500 leading-relaxed">{item.description}</p>}
                       </>
                     )}
