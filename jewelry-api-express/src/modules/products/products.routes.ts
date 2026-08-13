@@ -3,10 +3,16 @@ import {
   getProducts, getProduct, getProductById, createProduct, updateProduct, deleteProduct,
   getCategories, createCategory, updateCategory, deleteCategory,
   getCollections, createCollection, updateCollection, deleteCollection,
+  getTagGroups, createTagGroup, updateTagGroup, deleteTagGroup,
+  createTag, updateTag, deleteTag,
 } from './products.controller';
 import { authenticate, requireAdmin } from '@/middleware/auth';
 import { validate } from '@/middleware/validate';
-import { createProductSchema, updateProductSchema, createCategorySchema, updateCategorySchema, createCollectionSchema, updateCollectionSchema } from '@/lib/zodSchemas';
+import {
+  createProductSchema, updateProductSchema, createCategorySchema, updateCategorySchema,
+  createCollectionSchema, updateCollectionSchema, createTagGroupSchema, updateTagGroupSchema,
+  createTagSchema, updateTagSchema,
+} from '@/lib/zodSchemas';
 
 const router = Router();
 
@@ -54,6 +60,15 @@ router.get('/collections', getCollections);
 router.post('/collections', authenticate, requireAdmin, validate(createCollectionSchema), createCollection);
 router.patch('/collections/:id', authenticate, requireAdmin, validate(updateCollectionSchema), updateCollection);
 router.delete('/collections/:id', authenticate, requireAdmin, deleteCollection);
+
+router.get('/tag-groups', getTagGroups);
+router.post('/tag-groups', authenticate, requireAdmin, validate(createTagGroupSchema), createTagGroup);
+router.patch('/tag-groups/:id', authenticate, requireAdmin, validate(updateTagGroupSchema), updateTagGroup);
+router.delete('/tag-groups/:id', authenticate, requireAdmin, deleteTagGroup);
+
+router.post('/tags', authenticate, requireAdmin, validate(createTagSchema), createTag);
+router.patch('/tags/:id', authenticate, requireAdmin, validate(updateTagSchema), updateTag);
+router.delete('/tags/:id', authenticate, requireAdmin, deleteTag);
 
 router.get('/admin/:id', authenticate, requireAdmin, getProductById);
 
