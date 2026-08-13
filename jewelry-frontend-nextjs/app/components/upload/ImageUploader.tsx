@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useId } from "react";
 import Image from "next/image";
 import { Upload, X, Loader2 } from "lucide-react";
 import { apiFetch } from "@/lib/api";
@@ -17,6 +17,12 @@ export default function ImageUploader({ onUpload, maxFiles = 5, existingImages =
   const [uploading, setUploading] = useState(false);
   const [dragOver, setDragOver] = useState(false);
   const token = useAuthStore((s) => s.token);
+  // ID cố định "image-upload" trước đây gây trùng lặp khi có nhiều ImageUploader
+  // cùng hiện trên 1 trang (vd trang Categories & Collections có cả form
+  // Category lẫn Collection cùng lúc) — <label htmlFor> sẽ luôn bấm nhầm vào
+  // input ẩn ĐẦU TIÊN tìm thấy trên trang thay vì đúng cái cạnh nó, khiến "click
+  // to browse" không hoạt động (trong khi kéo-thả không dựa vào ID nên vẫn ổn).
+  const inputId = useId();
 
   const handleFiles = useCallback(async (files: FileList | null) => {
     if (!files || !token) return;
@@ -86,9 +92,9 @@ export default function ImageUploader({ onUpload, maxFiles = 5, existingImages =
           accept="image/jpeg,image/png,image/webp"
           onChange={(e) => handleFiles(e.target.files)}
           className="hidden"
-          id="image-upload"
+          id={inputId}
         />
-        <label htmlFor="image-upload" className="cursor-pointer block">
+        <label htmlFor={inputId} className="cursor-pointer block">
           {uploading ? (
             <div className="flex flex-col items-center gap-3">
               <Loader2 size={32} className="animate-spin text-neutral-400" />
