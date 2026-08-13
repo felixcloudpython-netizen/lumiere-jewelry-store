@@ -67,7 +67,7 @@ export default function CheckoutSuccessPage() {
   }, [orderId, token, clearCart]);
 
   return (
-    <main className="pt-32 pb-20 min-h-screen flex items-center justify-center text-center px-6">
+    <main className="pt-24 md:pt-32 pb-20 min-h-screen flex items-center justify-center text-center px-6">
       <div className="max-w-md">
         {status === 'checking' && (
           <>

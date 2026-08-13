@@ -45,7 +45,7 @@ export default function AccountPage() {
 
   if (!isHydrated) {
     return (
-      <main className="pt-32 pb-20 min-h-screen flex items-center justify-center">
+      <main className="pt-24 md:pt-32 pb-20 min-h-screen flex items-center justify-center">
         <div className="animate-spin w-6 h-6 border-2 border-neutral-900 border-t-transparent rounded-full" />
       </main>
     );
@@ -53,7 +53,7 @@ export default function AccountPage() {
 
   if (!token) {
     return (
-      <main className="pt-28 pb-20 min-h-screen bg-neutral-50">
+      <main className="pt-24 md:pt-28 pb-20 min-h-screen bg-neutral-50">
         <div className="max-w-4xl mx-auto px-6">
           <AccountAuth />
         </div>
@@ -67,7 +67,7 @@ export default function AccountPage() {
   };
 
   return (
-    <main className="pt-28 pb-20 min-h-screen">
+    <main className="pt-24 md:pt-28 pb-20 min-h-screen">
       <div className="max-w-2xl mx-auto px-6">
         <div className="flex items-center justify-between mb-10">
           <div>

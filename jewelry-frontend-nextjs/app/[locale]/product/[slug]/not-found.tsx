@@ -8,7 +8,7 @@ export default function ProductNotFound() {
   const t = useTranslations('shop');
 
   return (
-    <main className="pt-28 pb-20 min-h-screen flex items-center justify-center text-center px-6">
+    <main className="pt-24 md:pt-28 pb-20 min-h-screen flex items-center justify-center text-center px-6">
       <div>
         <h1 className="text-2xl font-light tracking-wide mb-3">{t('productNotFound')}</h1>
         <p className="text-sm text-neutral-500 mb-8">{t('productNotFoundDesc')}</p>

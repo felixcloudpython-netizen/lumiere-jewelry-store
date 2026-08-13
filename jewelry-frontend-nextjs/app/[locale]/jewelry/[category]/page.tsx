@@ -28,12 +28,12 @@ export default function CategoryPage() {
   }, [categorySlug]);
 
   return (
-    <main className="pt-28 pb-20">
+    <main className="pt-24 md:pt-28 pb-20">
       <div className="max-w-[1400px] mx-auto px-6">
         <Link href={`/${locale}/jewelry`} className="inline-flex items-center gap-2 text-xs tracking-wider text-neutral-500 hover:text-neutral-900 mb-8">
           <ChevronLeft size={14} /> {t('allJewelry')}
         </Link>
-        <h1 className="text-3xl md:text-4xl font-light tracking-[0.15em] mb-12 text-center min-h-[1.2em]">
+        <h1 className="text-3xl md:text-4xl font-light tracking-[0.15em] mb-8 md:mb-12 text-center min-h-[1.2em]">
           {categoryName ?? ''}
         </h1>
         <ProductListing category={categorySlug} />

@@ -17,7 +17,7 @@ export default function CollectionDetailPage() {
   const t = useTranslations('shop');
 
   return (
-    <main className="pt-28 pb-20">
+    <main className="pt-24 md:pt-28 pb-20">
       <div className="max-w-[1400px] mx-auto px-6">
         <Link href={`/${locale}/collections`} className="inline-flex items-center gap-2 text-xs tracking-wider text-neutral-500 hover:text-neutral-900 mb-8">
           <ChevronLeft size={14} /> {t('allCollections')}

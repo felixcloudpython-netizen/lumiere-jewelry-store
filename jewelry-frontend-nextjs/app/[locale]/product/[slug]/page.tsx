@@ -27,7 +27,7 @@ export default async function ProductPage({ params }: { params: { slug: string }
   if (!product) return notFound();
 
   return (
-    <main className="pt-28 pb-20">
+    <main className="pt-24 md:pt-28 pb-20">
       <div className="max-w-[1400px] mx-auto px-6">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20">
           <ProductGallery images={product.images} name={product.name} />

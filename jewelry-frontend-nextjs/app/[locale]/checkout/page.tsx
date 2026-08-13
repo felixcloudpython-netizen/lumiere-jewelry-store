@@ -34,7 +34,7 @@ export default function CheckoutPage() {
 
   if (items.length === 0) {
     return (
-      <main className="pt-32 pb-20 text-center">
+      <main className="pt-24 md:pt-32 pb-20 text-center">
         <h1 className="text-2xl font-light tracking-wide mb-4">{t('emptyBagTitle')}</h1>
         <Link href={`/${locale}/jewelry`} className="text-xs tracking-widest uppercase underline underline-offset-4">{tCart('continueShopping')}</Link>
       </main>
@@ -51,7 +51,7 @@ export default function CheckoutPage() {
   // đã đăng nhập từ trước, trong lúc chờ khôi phục xong.
   if (!isAuthHydrated) {
     return (
-      <main className="pt-32 pb-20 min-h-screen flex items-center justify-center">
+      <main className="pt-24 md:pt-32 pb-20 min-h-screen flex items-center justify-center">
         <div className="animate-spin w-6 h-6 border-2 border-neutral-900 border-t-transparent rounded-full" />
       </main>
     );
@@ -59,7 +59,7 @@ export default function CheckoutPage() {
 
   if (!token) {
     return (
-      <main className="pt-32 pb-20 min-h-screen bg-neutral-50">
+      <main className="pt-24 md:pt-32 pb-20 min-h-screen bg-neutral-50">
         <div className="max-w-md mx-auto px-6">
           <AuthGate context="checkout" />
         </div>
@@ -112,7 +112,7 @@ export default function CheckoutPage() {
   ];
 
   return (
-    <main className="pt-28 pb-20 min-h-screen bg-neutral-50">
+    <main className="pt-24 md:pt-28 pb-20 min-h-screen bg-neutral-50">
       <div className="max-w-[1200px] mx-auto px-6">
         <Link href={`/${locale}/jewelry`} className="inline-flex items-center gap-2 text-xs tracking-wider text-neutral-500 hover:text-neutral-900 mb-8">
           <ChevronLeft size={14} /> {tCart('continueShopping')}
