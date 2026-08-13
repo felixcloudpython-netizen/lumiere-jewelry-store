@@ -34,6 +34,16 @@ export interface ProductFormInitialData {
 
 const METALS = ['YELLOW_GOLD', 'WHITE_GOLD', 'ROSE_GOLD', 'SILVER', 'PLATINUM'];
 
+function slugify(text: string) {
+  return text.toLowerCase().trim()
+    .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+}
+function liveSlugify(text: string) {
+  return text.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9-]+/g, "-").replace(/-+/g, "-");
+}
+
 interface ProductFormProps {
   mode: 'create' | 'edit';
   productId?: string;
@@ -51,6 +61,7 @@ export default function ProductForm({ mode, productId, initialData }: ProductFor
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [images, setImages] = useState<string[]>(initialData?.images ?? []);
+  const [slugTouched, setSlugTouched] = useState(!!initialData?.slug);
 
   const [formData, setFormData] = useState({
     name: initialData?.name ?? "",
@@ -99,7 +110,7 @@ export default function ProductForm({ mode, productId, initialData }: ProductFor
     try {
       const payload = {
         name: formData.name,
-        slug: formData.slug,
+        slug: slugify(formData.slug),
         description: formData.description,
         price: parseInt(formData.price, 10),
         comparePrice: formData.comparePrice ? parseInt(formData.comparePrice, 10) : undefined,
@@ -156,11 +167,17 @@ export default function ProductForm({ mode, productId, initialData }: ProductFor
         <div className="grid grid-cols-2 gap-6">
           <div>
             <label className={labelClass}>Product Name</label>
-            <input type="text" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} className={inputClass} placeholder="e.g. Diamond Solitaire Ring" required />
+            <input type="text" value={formData.name} onChange={e => {
+              const name = e.target.value;
+              setFormData(f => ({ ...f, name, slug: slugTouched ? f.slug : slugify(name) }));
+            }} className={inputClass} placeholder="e.g. Diamond Solitaire Ring" required />
           </div>
           <div>
             <label className={labelClass}>Slug</label>
-            <input type="text" value={formData.slug} onChange={e => setFormData({...formData, slug: e.target.value})} className={inputClass} placeholder="e.g. diamond-solitaire-ring" required />
+            <input type="text" value={formData.slug} onChange={e => {
+              setFormData({...formData, slug: liveSlugify(e.target.value)});
+              setSlugTouched(true);
+            }} className={inputClass} placeholder="e.g. diamond-solitaire-ring" required />
           </div>
         </div>
 
