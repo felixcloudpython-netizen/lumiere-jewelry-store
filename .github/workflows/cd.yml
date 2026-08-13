@@ -1,8 +1,11 @@
 name: CD - Deploy to Production
 
+# Đã chuyển hẳn sang Coolify (lấy code qua GitHub App riêng, không qua GitHub
+# Actions) — workflow này KHÔNG còn tự chạy khi push nữa (trước đây tự chạy mỗi
+# lần push, luôn báo lỗi vì thiếu secret SSH_PRIVATE_KEY/SSH_HOST chưa từng cấu
+# hình). Giữ lại file, chỉ chạy khi bấm tay (workflow_dispatch), phòng khi sau
+# này cần quay lại đường VPS+SSH thuần.
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
 
 jobs:
@@ -48,7 +51,10 @@ jobs:
           curl -f https://api.${{ secrets.SSH_HOST }}/health || exit 1
 
       - name: Notify Slack
-        if: always()
+        # Chỉ chạy khi thực sự có secret này — trước đây "if: always()" khiến
+        # bước này LUÔN chạy và LUÔN lỗi cứng vì SLACK_WEBHOOK_URL chưa từng
+        # được cấu hình (vốn chỉ là secret optional, không bắt buộc).
+        if: always() && secrets.SLACK_WEBHOOK_URL != ''
         uses: 8398a7/action-slack@v3
         with:
           status: ${{ job.status }}
