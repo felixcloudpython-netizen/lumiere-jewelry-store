@@ -119,42 +119,44 @@ export default function Header() {
             </button>
           </div>
         )}
-        <div className="max-w-[1400px] mx-auto px-6">
-          <div className="flex items-center justify-between h-16 md:h-20">
-            <div className="flex items-center flex-1 md:flex-none">
-              <button className="md:hidden p-2 -ml-2" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
-                {isMobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
-              </button>
-            </div>
-            <Link href={`/${locale}`} className="flex-shrink-0">
-              <h1 className="text-lg md:text-2xl font-light tracking-[0.15em] md:tracking-[0.3em] uppercase whitespace-nowrap">Lumière</h1>
-            </Link>
-            <nav className="hidden md:flex flex-1 justify-center items-center gap-8">
-              {navItems.map((item) => (
-                <div key={item.label} className="relative"
-                  onMouseEnter={() => item.columns.length > 0 && setActiveMegaMenu(item.label)}>
-                  <Link href={item.href} className={`text-[11px] tracking-[0.15em] uppercase py-5 border-b-2 transition-colors ${pathname.startsWith(item.href) ? "border-neutral-900 text-neutral-900" : "border-transparent text-neutral-600 hover:text-neutral-900"}`}>
-                    {item.label}
-                  </Link>
-                </div>
-              ))}
-            </nav>
-            <div className="flex items-center justify-end flex-1 md:flex-none gap-0.5 md:gap-3">
-              {/* Tạm ẩn theo yêu cầu (gây chồng lấn với logo trên mobile) — bỏ
-                  comment dòng dưới để bật lại khi cần. */}
-              {/* <LanguageSwitcher /> */}
-              <button onClick={() => setIsSearchOpen(true)} className="p-2 hover:bg-neutral-100 rounded-full transition-colors" aria-label={t("search")}>
-                <Search size={18} strokeWidth={1.5} />
-              </button>
-              <Link href={`/${locale}/account`} className="hidden md:block p-2 hover:bg-neutral-100 rounded-full transition-colors">
-                <User size={18} strokeWidth={1.5} />
+        <div className="border-b border-neutral-200">
+          <div className="max-w-[1400px] mx-auto px-6">
+            <div className="flex items-center justify-between h-16 md:h-20">
+              <div className="flex items-center flex-1 md:flex-none">
+                <button className="md:hidden p-2 -ml-2" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
+                  {isMobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
+                </button>
+              </div>
+              <Link href={`/${locale}`} className="flex-shrink-0">
+                <h1 className="text-lg md:text-2xl font-light tracking-[0.15em] md:tracking-[0.3em] uppercase whitespace-nowrap">Lumière</h1>
               </Link>
-              <button onClick={toggleCart} className="relative p-2 hover:bg-neutral-100 rounded-full transition-colors" aria-label={t("cart")}>
-                <ShoppingBag size={18} strokeWidth={1.5} />
-                {cartCount > 0 && (
-                  <span className="absolute -top-0.5 -right-0.5 bg-neutral-900 text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center">{cartCount}</span>
-                )}
-              </button>
+              <nav className="hidden md:flex flex-1 justify-center items-center gap-8">
+                {navItems.map((item) => (
+                  <div key={item.label} className="relative"
+                    onMouseEnter={() => item.columns.length > 0 && setActiveMegaMenu(item.label)}>
+                    <Link href={item.href} className={`text-[11px] tracking-[0.15em] uppercase py-5 border-b-2 transition-colors ${pathname.startsWith(item.href) ? "border-neutral-900 text-neutral-900" : "border-transparent text-neutral-600 hover:text-neutral-900"}`}>
+                      {item.label}
+                    </Link>
+                  </div>
+                ))}
+              </nav>
+              <div className="flex items-center justify-end flex-1 md:flex-none gap-0.5 md:gap-3">
+                {/* Tạm ẩn theo yêu cầu (gây chồng lấn với logo trên mobile) — bỏ
+                    comment dòng dưới để bật lại khi cần. */}
+                {/* <LanguageSwitcher /> */}
+                <button onClick={() => setIsSearchOpen(true)} className="p-2 hover:bg-neutral-100 rounded-full transition-colors" aria-label={t("search")}>
+                  <Search size={18} strokeWidth={1.5} />
+                </button>
+                <Link href={`/${locale}/account`} className="hidden md:block p-2 hover:bg-neutral-100 rounded-full transition-colors">
+                  <User size={18} strokeWidth={1.5} />
+                </Link>
+                <button onClick={toggleCart} className="relative p-2 hover:bg-neutral-100 rounded-full transition-colors" aria-label={t("cart")}>
+                  <ShoppingBag size={18} strokeWidth={1.5} />
+                  {cartCount > 0 && (
+                    <span className="absolute -top-0.5 -right-0.5 bg-neutral-900 text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center">{cartCount}</span>
+                  )}
+                </button>
+              </div>
             </div>
           </div>
         </div>
