@@ -47,7 +47,7 @@ export default function MegaMenu({ isOpen, columns, onClose }: MegaMenuProps) {
               )}
               <div className={col.variant === 'products' ? 'grid grid-cols-3 gap-4' : 'flex flex-wrap gap-3'}>
                 {col.items.map((item) => (
-                  <Link key={item.label} href={item.href} className={`group block ${col.variant !== 'products' ? 'border border-neutral-200 px-4 py-3 hover:border-neutral-900 transition-colors max-w-[220px]' : ''}`} onClick={onClose}>
+                  <Link key={item.label} href={item.href} className={`group block ${col.variant !== 'products' ? 'flex items-center gap-3 border border-neutral-200 px-4 py-3 hover:border-neutral-900 transition-colors max-w-[220px]' : ''}`} onClick={onClose}>
                     {col.variant === 'products' ? (
                       <>
                         <div className="relative aspect-square bg-neutral-50 overflow-hidden mb-2">
@@ -60,17 +60,17 @@ export default function MegaMenu({ isOpen, columns, onClose }: MegaMenuProps) {
                         <p className="text-xs text-neutral-700 truncate group-hover:underline underline-offset-4">{item.label}</p>
                         {typeof item.price === 'number' && <p className="text-xs text-neutral-400">{formatVND(item.price)}</p>}
                       </>
-                    ) : item.image ? (
-                      <>
-                        <div className="relative w-10 h-10 bg-neutral-50 overflow-hidden mb-2 float-left mr-3">
-                          <Image src={item.image} alt={item.label} fill className="object-cover" />
-                        </div>
-                        <h3 className="font-serif-display text-[13px] group-hover:underline underline-offset-4">{item.label}</h3>
-                      </>
                     ) : (
                       <>
-                        <h3 className="font-serif-display text-[13px] group-hover:underline underline-offset-4">{item.label}</h3>
-                        {item.description && <p className="text-[11px] text-neutral-500 leading-relaxed mt-0.5">{item.description}</p>}
+                        {item.image && (
+                          <div className="relative w-9 h-9 flex-shrink-0 bg-neutral-50 overflow-hidden">
+                            <Image src={item.image} alt={item.label} fill className="object-cover" />
+                          </div>
+                        )}
+                        <div className="min-w-0">
+                          <h3 className="font-serif-display text-[13px] truncate group-hover:underline underline-offset-4">{item.label}</h3>
+                          {item.description && <p className="text-[11px] text-neutral-500 leading-relaxed mt-0.5 line-clamp-2">{item.description}</p>}
+                        </div>
                       </>
                     )}
                   </Link>
