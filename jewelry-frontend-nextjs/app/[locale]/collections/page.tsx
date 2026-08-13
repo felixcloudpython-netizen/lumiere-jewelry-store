@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useLocale, useTranslations } from 'next-intl';
 import { apiFetch } from '@/lib/api';
 
@@ -10,6 +11,7 @@ interface Collection {
   name: string;
   slug: string;
   description: string;
+  heroImage: string | null;
   _count: { products: number };
 }
 
@@ -44,11 +46,24 @@ export default function CollectionsPage() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {collections.map((c) => (
-              <Link key={c.id} href={`/${locale}/collections/${c.slug}`} className="group block bg-neutral-50 aspect-[3/4] flex flex-col items-center justify-center p-8 hover:shadow-lg transition-shadow">
-                <div className="w-20 h-20 rounded-full bg-neutral-200 mb-6 flex items-center justify-center text-2xl">✦</div>
-                <h3 className="text-sm tracking-[0.2em] uppercase mb-2">{c.name}</h3>
-                {c.description && <p className="text-xs text-neutral-500 text-center">{c.description}</p>}
-                <p className="text-[11px] text-neutral-400 mt-3">{tShop('itemsCount', { count: c._count.products })}</p>
+              <Link key={c.id} href={`/${locale}/collections/${c.slug}`} className="group relative block bg-neutral-50 aspect-[3/4] overflow-hidden hover:shadow-lg transition-shadow">
+                {c.heroImage ? (
+                  <>
+                    <Image src={c.heroImage} alt={c.name} fill className="object-cover transition-transform duration-500 group-hover:scale-105" />
+                    <div className="absolute inset-0 bg-black/30 flex flex-col items-center justify-center p-8">
+                      <h3 className="text-sm tracking-[0.2em] uppercase mb-2 text-white">{c.name}</h3>
+                      {c.description && <p className="text-xs text-white/90 text-center">{c.description}</p>}
+                      <p className="text-[11px] text-white/70 mt-3">{tShop('itemsCount', { count: c._count.products })}</p>
+                    </div>
+                  </>
+                ) : (
+                  <div className="absolute inset-0 flex flex-col items-center justify-center p-8">
+                    <div className="w-20 h-20 rounded-full bg-neutral-200 mb-6 flex items-center justify-center text-2xl">✦</div>
+                    <h3 className="text-sm tracking-[0.2em] uppercase mb-2">{c.name}</h3>
+                    {c.description && <p className="text-xs text-neutral-500 text-center">{c.description}</p>}
+                    <p className="text-[11px] text-neutral-400 mt-3">{tShop('itemsCount', { count: c._count.products })}</p>
+                  </div>
+                )}
               </Link>
             ))}
           </div>
