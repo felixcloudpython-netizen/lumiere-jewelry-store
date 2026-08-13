@@ -28,6 +28,7 @@ export const createProductSchema = z.object({
   sku: z.string().min(1),
   categoryId: z.string().cuid(),
   collectionId: z.string().cuid().optional(),
+  tagIds: z.array(z.string().cuid()).optional(),
   metal: z.nativeEnum(Metal),
   stones: z.array(z.string()).default([]),
   sizes: z.array(z.number().int().positive()).default([]),
@@ -95,3 +96,17 @@ export const createCollectionSchema = z.object({
   heroImage: z.string().trim().optional(),
 });
 export const updateCollectionSchema = createCollectionSchema.partial();
+
+export const createTagGroupSchema = z.object({
+  name: z.string().trim().min(1),
+  slug: slugSchema,
+  order: z.number().int().default(0),
+});
+export const updateTagGroupSchema = createTagGroupSchema.partial();
+
+export const createTagSchema = z.object({
+  name: z.string().trim().min(1),
+  slug: slugSchema,
+  tagGroupId: z.string().cuid(),
+});
+export const updateTagSchema = createTagSchema.partial();
