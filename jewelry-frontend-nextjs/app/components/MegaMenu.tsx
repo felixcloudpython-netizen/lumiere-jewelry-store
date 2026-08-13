@@ -45,9 +45,9 @@ export default function MegaMenu({ isOpen, columns, onClose }: MegaMenuProps) {
               {col.title && (
                 <p className="text-[13px] tracking-[0.15em] uppercase text-neutral-400 mb-4">{col.title}</p>
               )}
-              <div className={col.variant === 'products' ? 'grid grid-cols-3 gap-4' : 'flex flex-wrap gap-3'}>
+              <div className={col.variant === 'products' ? 'grid grid-cols-3 gap-4' : 'flex flex-wrap gap-x-8 gap-y-4'}>
                 {col.items.map((item) => (
-                  <Link key={item.label} href={item.href} className={`group block ${col.variant !== 'products' ? 'flex items-center gap-3 border border-neutral-200 px-4 py-3 hover:border-neutral-900 transition-colors max-w-[220px]' : ''}`} onClick={onClose}>
+                  <Link key={item.label} href={item.href} className={`group block ${col.variant !== 'products' ? 'flex items-center gap-3' : ''}`} onClick={onClose}>
                     {col.variant === 'products' ? (
                       <>
                         <div className="relative aspect-square bg-neutral-50 overflow-hidden mb-2">
@@ -68,7 +68,7 @@ export default function MegaMenu({ isOpen, columns, onClose }: MegaMenuProps) {
                           </div>
                         )}
                         <div className="min-w-0">
-                          <h3 className="font-serif-display text-[13px] truncate group-hover:underline underline-offset-4">{item.label}</h3>
+                          <h3 className="text-[13px] truncate group-hover:underline underline-offset-4">{item.label}</h3>
                           {item.description && <p className="text-[11px] text-neutral-500 leading-relaxed mt-0.5 line-clamp-2">{item.description}</p>}
                         </div>
                       </>

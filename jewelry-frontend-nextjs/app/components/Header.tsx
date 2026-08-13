@@ -75,7 +75,7 @@ export default function Header() {
 
   const navItems: { label: string; href: string; columns: MegaMenuColumnData[] }[] = [
     { label: t("jewelry"), href: `/${locale}/jewelry`, columns: [
-      { title: t("menu.categories"), items: jewelryItems.map((cat) => ({
+      { items: jewelryItems.map((cat) => ({
         label: cat.name, href: `/${locale}/jewelry/${cat.slug}`, description: cat.description, image: cat.image,
       })) },
       featuredColumn,
