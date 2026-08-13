@@ -34,10 +34,14 @@ interface MegaMenuProps {
  */
 export default function MegaMenu({ isOpen, columns, onClose }: MegaMenuProps) {
   const visibleColumns = columns.filter((c) => c.items.length > 0);
-  if (!isOpen || visibleColumns.length === 0) return null;
+  const shouldShow = isOpen && visibleColumns.length > 0;
 
   return (
-    <div className="absolute left-0 right-0 bg-white border-b border-neutral-200 shadow-lg">
+    <div
+      className={`absolute left-0 right-0 bg-white border-b border-neutral-200 shadow-lg overflow-hidden transition-[max-height,opacity] duration-300 ease-out ${
+        shouldShow ? "max-h-[600px] opacity-100" : "max-h-0 opacity-0 pointer-events-none"
+      }`}
+    >
       <div className="max-w-[1400px] mx-auto px-6 py-10">
         <div className="flex gap-12">
           {visibleColumns.map((col, idx) => (

@@ -113,11 +113,11 @@ export default function Header() {
               <Link href={`/${locale}`} className="flex-shrink-0">
                 <h1 className="text-lg md:text-2xl font-light tracking-[0.15em] md:tracking-[0.3em] uppercase whitespace-nowrap">Lumière</h1>
               </Link>
-              <nav className="hidden md:flex flex-1 justify-center items-center gap-8">
+              <nav className="hidden md:flex flex-1 justify-center items-stretch gap-8 self-stretch">
                 {navItems.map((item) => (
-                  <div key={item.label} className="relative"
+                  <div key={item.label} className="relative flex"
                     onMouseEnter={() => item.columns.length > 0 && setActiveMegaMenu(item.label)}>
-                    <Link href={item.href} className={`text-[11px] tracking-[0.15em] uppercase py-5 border-b-2 transition-colors ${pathname.startsWith(item.href) ? "border-neutral-900 text-neutral-900" : "border-transparent text-neutral-600 hover:text-neutral-900"}`}>
+                    <Link href={item.href} className="h-full flex items-center text-[11px] tracking-[0.15em] uppercase border-b-2 border-transparent text-neutral-600 hover:text-neutral-900 hover:border-neutral-900 transition-colors">
                       {item.label}
                     </Link>
                   </div>
