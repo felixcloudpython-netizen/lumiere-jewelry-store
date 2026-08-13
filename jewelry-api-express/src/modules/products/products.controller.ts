@@ -13,6 +13,7 @@ export const getProducts = async (req: Request, res: Response) => {
     search,
     featured,
     bestseller,
+    tags,
     sortBy = 'createdAt',
     sortOrder = 'desc',
   } = req.query;
@@ -39,6 +40,17 @@ export const getProducts = async (req: Request, res: Response) => {
   if (featured === 'true') where.isFeatured = true;
   if (bestseller === 'true') where.isBestseller = true;
 
+  // Lọc theo tag — ?tags=id1,id2 trả về sản phẩm có ĐỦ TẤT CẢ tag được chỉ
+  // định (AND), không phải chỉ cần khớp 1 trong số đó. Mỗi tagId tương ứng 1
+  // điều kiện "some" riêng trong mảng AND — Prisma yêu cầu CẢ mảng AND đều
+  // đúng thì sản phẩm mới được tính.
+  if (tags) {
+    const tagIds = (tags as string).split(',').filter(Boolean);
+    if (tagIds.length > 0) {
+      where.AND = tagIds.map((tagId) => ({ tags: { some: { tagId } } }));
+    }
+  }
+
   const [products, total] = await Promise.all([
     prisma.product.findMany({
       where,
@@ -48,6 +60,7 @@ export const getProducts = async (req: Request, res: Response) => {
       include: {
         category: { select: { name: true, slug: true } },
         collection: { select: { name: true, slug: true } },
+        tags: { include: { tag: { include: { tagGroup: true } } } },
       },
     }),
     prisma.product.count({ where }),
@@ -68,7 +81,7 @@ export const getProduct = async (req: Request, res: Response) => {
   const { slug } = req.params;
   const product = await prisma.product.findUnique({
     where: { slug },
-    include: { category: true, collection: true },
+    include: { category: true, collection: true, tags: { include: { tag: { include: { tagGroup: true } } } } },
   });
   if (!product) return res.status(404).json({ error: 'Product not found' });
   res.json(product);
@@ -80,26 +93,42 @@ export const getProductById = async (req: Request, res: Response) => {
   const { id } = req.params;
   const product = await prisma.product.findUnique({
     where: { id },
-    include: { category: true, collection: true },
+    include: { category: true, collection: true, tags: { include: { tag: { include: { tagGroup: true } } } } },
   });
   if (!product) return res.status(404).json({ error: 'Product not found' });
   res.json(product);
 };
 
+// tagIds không phải field trực tiếp của Product (là quan hệ nhiều-nhiều qua
+// bảng nối ProductTag), nên phải tách riêng khỏi phần data thường, ghi qua
+// nested write `tags: { create: [...] }` thay vì gán thẳng.
 export const createProduct = async (req: Request, res: Response) => {
+  const { tagIds, ...data } = req.body;
   const product = await prisma.product.create({
-    data: req.body,
-    include: { category: true, collection: true },
+    data: {
+      ...data,
+      ...(tagIds && tagIds.length > 0 ? { tags: { create: tagIds.map((tagId: string) => ({ tagId })) } } : {}),
+    },
+    include: { category: true, collection: true, tags: { include: { tag: true } } },
   });
   res.status(201).json(product);
 };
 
 export const updateProduct = async (req: Request, res: Response) => {
   const { id } = req.params;
+  const { tagIds, ...data } = req.body;
   const product = await prisma.product.update({
     where: { id },
-    data: req.body,
-    include: { category: true, collection: true },
+    data: {
+      ...data,
+      // tagIds === undefined nghĩa là request này KHÔNG đụng gì tới tag (giữ
+      // nguyên tag hiện có) — chỉ khi client THỰC SỰ gửi tagIds (kể cả mảng
+      // rỗng, để chủ động bỏ hết tag) mới xoá-và-gán-lại toàn bộ.
+      ...(tagIds !== undefined ? {
+        tags: { deleteMany: {}, create: tagIds.map((tagId: string) => ({ tagId })) },
+      } : {}),
+    },
+    include: { category: true, collection: true, tags: { include: { tag: true } } },
   });
   res.json(product);
 };
@@ -172,5 +201,64 @@ export const deleteCollection = async (req: Request, res: Response) => {
     return res.status(409).json({ error: `Không thể xoá — còn ${count} sản phẩm đang thuộc bộ sưu tập này.` });
   }
   await prisma.collection.delete({ where: { id } });
+  res.status(204).send();
+};
+
+// ---------------------------------------------------------------------------
+// TagGroup / Tag — hệ thống phân loại đa chiều, admin tự tạo nhóm + giá trị
+// tuỳ ý (khác Category — xem chú thích đầu schema.prisma).
+// ---------------------------------------------------------------------------
+
+export const getTagGroups = async (_req: Request, res: Response) => {
+  const tagGroups = await prisma.tagGroup.findMany({
+    orderBy: { order: 'asc' },
+    include: { tags: { include: { _count: { select: { productTags: true } } } } },
+  });
+  res.json(tagGroups);
+};
+
+export const createTagGroup = async (req: Request, res: Response) => {
+  const tagGroup = await prisma.tagGroup.create({ data: req.body });
+  res.status(201).json(tagGroup);
+};
+
+export const updateTagGroup = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const tagGroup = await prisma.tagGroup.update({ where: { id }, data: req.body });
+  res.json(tagGroup);
+};
+
+export const deleteTagGroup = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  // Xoá cả nhóm sẽ tự xoá theo toàn bộ Tag bên trong (onDelete: Cascade ở
+  // schema) — cảnh báo rõ số lượng tag sẽ mất theo, để admin không xoá nhầm.
+  const tagCount = await prisma.tag.count({ where: { tagGroupId: id } });
+  if (tagCount > 0) {
+    return res.status(409).json({ error: `Không thể xoá — nhóm này còn ${tagCount} tag bên trong. Xoá hết tag trước.` });
+  }
+  await prisma.tagGroup.delete({ where: { id } });
+  res.status(204).send();
+};
+
+export const createTag = async (req: Request, res: Response) => {
+  const tag = await prisma.tag.create({ data: req.body });
+  res.status(201).json(tag);
+};
+
+export const updateTag = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const tag = await prisma.tag.update({ where: { id }, data: req.body });
+  res.json(tag);
+};
+
+export const deleteTag = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  // Khác Category, gắn tag vào sản phẩm không bắt buộc — xoá tag chỉ mất liên
+  // kết, không phá sản phẩm. Vẫn cảnh báo số lượng để admin biết trước khi xoá.
+  const count = await prisma.productTag.count({ where: { tagId: id } });
+  if (count > 0) {
+    return res.status(409).json({ error: `Không thể xoá — còn ${count} sản phẩm đang gắn tag này.` });
+  }
+  await prisma.tag.delete({ where: { id } });
   res.status(204).send();
 };
