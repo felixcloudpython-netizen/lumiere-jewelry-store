@@ -2,9 +2,14 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
 export class ApiError extends Error {
   status: number;
-  constructor(status: number, message: string) {
+  // Chi tiết lỗi theo từng field (từ Zod fieldErrors) — trước đây bị bỏ qua
+  // hoàn toàn, khiến UI chỉ hiện được đúng thông báo chung "Validation failed",
+  // mất hết thông tin field nào thực sự gây lỗi.
+  details?: Record<string, string[] | undefined>;
+  constructor(status: number, message: string, details?: Record<string, string[] | undefined>) {
     super(message);
     this.status = status;
+    this.details = details;
   }
 }
 
@@ -37,7 +42,7 @@ export async function apiFetch<T = unknown>(path: string, options: ApiFetchOptio
 
   if (!res.ok) {
     const message = (data && (data.error || data.message)) || `Request failed (${res.status})`;
-    throw new ApiError(res.status, message);
+    throw new ApiError(res.status, message, data?.details);
   }
 
   return data as T;

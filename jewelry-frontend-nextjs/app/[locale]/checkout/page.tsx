@@ -99,7 +99,21 @@ export default function CheckoutPage() {
     } catch (err) {
       // Ví dụ lỗi thường gặp: sản phẩm hết hàng giữa lúc khách đang checkout
       // (orders.controller.ts kiểm tra tồn kho tại thời điểm tạo order).
-      setError(err instanceof ApiError ? err.message : t('placeOrderError'));
+      if (err instanceof ApiError) {
+        // Nếu backend trả kèm chi tiết field lỗi (vd thiếu "Số điện thoại"),
+        // hiện rõ ràng thay vì chỉ mỗi "Validation failed" cụt lủn, không biết
+        // sửa gì.
+        if (err.details) {
+          const fieldMessages = Object.entries(err.details)
+            .filter(([, msgs]) => msgs && msgs.length > 0)
+            .map(([field, msgs]) => `${field}: ${msgs![0]}`);
+          setError(fieldMessages.length > 0 ? fieldMessages.join(' — ') : err.message);
+        } else {
+          setError(err.message);
+        }
+      } else {
+        setError(t('placeOrderError'));
+      }
     } finally {
       setIsProcessing(false);
     }
